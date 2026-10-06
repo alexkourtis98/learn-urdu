@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urdu Exercises — اردو مشقیں</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#1a1a2e;color:#e0e0e0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;padding:0 0 60px}
+h1{text-align:center;padding:30px 20px 10px;font-size:2em;color:#f5f5f5;letter-spacing:1px}
+.subtitle{text-align:center;color:#888;font-size:.95em;margin-bottom:20px}
+#scorebar{position:sticky;top:0;z-index:100;background:#16213e;border-bottom:2px solid #c85028;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;font-size:1.05em}
+#scorebar .score{color:#c85028;font-weight:700;font-size:1.2em}
+#scorebar .pct{color:#888;font-size:.9em;margin-left:10px}
+#scorebar button{background:#c85028;color:#fff;border:none;padding:6px 16px;border-radius:4px;cursor:pointer;font-size:.9em;margin-left:8px}
+#scorebar button:hover{background:#e06030}
+#saveStatus{margin-left:12px;font-size:.82em;color:#2ecc71;opacity:0;transition:opacity .4s}
+#saveStatus.show{opacity:1}
+.container{max-width:900px;margin:0 auto;padding:0 20px}
+.exercise{background:#16213e;border-radius:10px;margin:20px 0;overflow:hidden;border:1px solid #233}
+.exercise-header{background:#0f3460;padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none}
+.exercise-header:hover{background:#1a4a80}
+.exercise-header h2{font-size:1.1em;color:#f5f5f5;margin:0}
+.exercise-header .arrow{color:#c85028;font-size:1.2em;transition:transform .2s}
+.exercise-header .arrow.open{transform:rotate(90deg)}
+.exercise-body{padding:20px;display:none}
+.exercise-body.open{display:block}
+.instruction{color:#aaa;font-size:.9em;margin-bottom:14px;font-style:italic}
+.rule-box{background:#1a1a2e;border-left:3px solid #c85028;padding:8px 14px;margin:10px 0;font-size:.88em;color:#bbb}
+table{width:100%;border-collapse:collapse;margin:10px 0}
+th{background:#0f3460;color:#ddd;padding:8px 10px;text-align:left;font-size:.85em;font-weight:600}
+td{padding:8px 10px;border-bottom:1px solid #233;font-size:.9em;vertical-align:middle}
+tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+td.num{color:#666;width:40px;text-align:center}
+input[type="text"]{background:#1a1a2e;border:2px solid #333;color:#e0e0e0;padding:6px 10px;border-radius:4px;font-size:.9em;width:100%;transition:border-color .2s,background .2s}
+input[type="text"]:focus{border-color:#c85028;outline:none}
+input[type="text"].correct{border-color:#2ecc71;background:rgba(46,204,113,.1);color:#2ecc71}
+input[type="text"].wrong{border-color:#e74c3c;background:rgba(231,76,60,.1);color:#e74c3c}
+input[type="text"].answered{opacity:.8;cursor:default}
+.answer-reveal{color:#c85028;font-size:.82em;margin-top:3px;display:none}
+.answer-reveal.show{display:block}
+.hint-text{color:#888;font-size:.82em;margin-top:2px;display:none;font-style:italic}
+.hint-text.show{display:block}
+.checkmark{color:#2ecc71;margin-left:6px;font-weight:700}
+.ex-cell{position:relative}
+textarea{background:#1a1a2e;border:2px solid #333;color:#e0e0e0;padding:10px;border-radius:4px;font-size:.9em;width:100%;min-height:120px;resize:vertical;font-family:inherit}
+textarea:focus{border-color:#c85028;outline:none}
+.model-btn{background:#c85028;color:#fff;border:none;padding:8px 18px;border-radius:4px;cursor:pointer;font-size:.9em;margin-top:10px}
+.model-btn:hover{background:#e06030}
+.model-answer{background:#1a1a2e;border-left:3px solid #c85028;padding:12px 16px;margin-top:12px;font-size:.9em;color:#bbb;display:none;line-height:1.7}
+.model-answer.show{display:block}
+.dialogue{line-height:2.2;font-size:.95em}
+.dialogue .speaker{color:#c85028;font-weight:700}
+.dialogue input[type="text"]{display:inline-block;width:160px;margin:0 4px;vertical-align:middle}
+.dialogue .hint{color:#666;font-size:.82em;font-style:italic}
+.mc-group{margin:16px 0}
+.mc-q{font-weight:600;margin-bottom:8px;color:#f0f0f0}
+.mc-option{display:block;padding:8px 14px;margin:4px 0;border-radius:4px;cursor:pointer;border:2px solid #333;transition:all .2s;font-size:.9em}
+.mc-option:hover{border-color:#c85028;background:rgba(200,80,40,.08)}
+.mc-option input[type="radio"]{margin-right:8px;accent-color:#c85028}
+.mc-option.correct-choice{border-color:#2ecc71;background:rgba(46,204,113,.12);color:#2ecc71}
+.mc-option.wrong-choice{border-color:#e74c3c;background:rgba(231,76,60,.08);color:#e74c3c}
+.mc-option.reveal-correct{border-color:#2ecc71;background:rgba(46,204,113,.06)}
+.mc-option.locked{pointer-events:none;opacity:.85}
+.practice-link{color:#c85028;font-size:1.1em;text-decoration:none;padding:2px 8px;border:1px solid #c85028;border-radius:4px;transition:background .2s,color .2s;flex-shrink:0}
+.practice-link:hover{background:#c85028;color:#fff}
+.practice-badge{font-size:.75em;color:#888;background:rgba(200,80,40,.15);padding:2px 8px;border-radius:10px;display:none}
+.practice-badge.has-progress{display:inline-block}
+.practice-badge.complete{background:rgba(46,204,113,.15);color:#2ecc71}
+.info-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1.5px solid #c85028;color:#c85028;font-size:.75em;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .2s;font-style:italic;font-family:Georgia,serif}
+.info-icon:hover{background:#c85028;color:#fff}
+.theory-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.theory-overlay.show{display:flex}
+.theory-content{background:#16213e;border:1px solid #c85028;border-radius:10px;padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;position:relative;color:#e0e0e0;font-size:.92em;line-height:1.6}
+.theory-content h3{color:#f5f5f5;margin:0 0 12px;font-size:1.1em}
+.theory-content .close-theory{position:absolute;top:10px;right:14px;color:#888;cursor:pointer;font-size:1.3em;line-height:1}
+.theory-content .close-theory:hover{color:#c85028}
+.theory-content table{width:100%;margin:8px 0}
+.theory-content th{background:#0f3460;padding:6px 10px;font-size:.85em;text-align:left}
+.theory-content td{padding:5px 10px;border-bottom:1px solid #233;font-size:.88em}
+.theory-content .rule{color:#c85028;font-weight:600}
+.theory-content p{margin:6px 0}
+.theory-content ul{margin:6px 0;padding-left:18px}
+.theory-content li{margin:3px 0;font-size:.9em}
+.urdu{font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Nafees Nastaleeq',serif;direction:rtl;unicode-bidi:bidi-override;font-size:1.05em}
+@media(max-width:600px){
+  h1{font-size:1.4em}
+  .exercise-header h2{font-size:.95em}
+  td,th{padding:6px;font-size:.82em}
+  input[type="text"]{font-size:.85em;padding:5px 8px}
+  .dialogue input[type="text"]{width:120px}
+}
+</style>
+</head>
+<body>
+
+<div id="scorebar">
+  <div>Score: <span class="score" id="scoreDisplay">0 / 0</span><span class="pct" id="pctDisplay"></span><span id="saveStatus"></span></div>
+  <div>
+    <button onclick="saveProgress()">Save (Ctrl+S)</button>
+    <button onclick="resetAll()">Reset All</button>
+  </div>
+</div>
+
+<h1>Urdu Exercises — <span dir="rtl" style="font-family:'Noto Nastaliq Urdu',serif">اردو مشقیں</span></h1>
+<p class="subtitle">All 25 exercises for Urdu mastery, interactive</p>
+
+<div class="container" id="app"></div>
+
+<script>
+const EXERCISES = [
+  {
+    id:1, title:"Greetings & Responses — سلام و جواب",
+    instruction:"Write the Urdu greeting or response. Accept Urdu script or transliteration.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Peace be upon you (formal greeting)","السلام علیکم / assalam-o-alaikum"],
+      ["2","And upon you peace (reply)","وعلیکم السلام / wa-alaikum-assalam"],
+      ["3","Good morning","صبح بخیر / subah bakhair"],
+      ["4","Good evening","شام بخیر / shaam bakhair"],
+      ["5","Goodbye","خدا حافظ / khuda hafiz"],
+      ["6","Hello (informal)","ہیلو / hello"],
+      ["7","How are you? (formal, to male)","آپ کیسے ہیں؟ / aap kaise hain"],
+      ["8","How are you? (formal, to female)","آپ کیسی ہیں؟ / aap kaisi hain"],
+      ["9","I am fine, thank you","میں ٹھیک ہوں شکریہ / main theek hoon shukriya"],
+      ["10","See you later","پھر ملیں گے / phir milenge"]
+    ]
+  },
+  {
+    id:2, title:"Self-Introduction — تعارف",
+    instruction:"Write the Urdu translation for each introduction phrase.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","My name is ...","میرا نام ... ہے / mera naam ... hai"],
+      ["2","What is your name?","آپ کا نام کیا ہے؟ / aap ka naam kya hai"],
+      ["3","I am from ...","میں ... سے ہوں / main ... se hoon"],
+      ["4","Where are you from?","آپ کہاں سے ہیں؟ / aap kahan se hain"],
+      ["5","Nice to meet you","آپ سے مل کر خوشی ہوئی / aap se mil kar khushi hui"],
+      ["6","I am a student","میں طالب علم ہوں / main talib-e-ilm hoon"],
+      ["7","I live in ...","میں ... میں رہتا ہوں / main ... mein rehta hoon"],
+      ["8","I speak Urdu","میں اردو بولتا ہوں / main urdu bolta hoon"]
+    ]
+  },
+  {
+    id:3, title:"Polite Phrases — شائستہ الفاظ",
+    instruction:"Write the Urdu polite expression.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Thank you","شکریہ / shukriya"],
+      ["2","You're welcome / No problem","کوئی بات نہیں / koi baat nahi"],
+      ["3","Please","براہ کرم / barah-e-karam"],
+      ["4","Excuse me / Sorry","معاف کیجیے / maaf kijiye"],
+      ["5","I'm sorry","مجھے افسوس ہے / mujhe afsos hai"],
+      ["6","God willing","ان شاء اللہ / inshallah"],
+      ["7","Thanks be to God","الحمد للہ / alhamdulillah"],
+      ["8","With your permission","اجازت سے / ijazat se"],
+      ["9","Welcome","خوش آمدید / khush aamdeed"],
+      ["10","Congratulations","مبارک ہو / mubarak ho"]
+    ]
+  },
+  {
+    id:4, title:"Numbers 1-10 — نمبر ایک سے دس",
+    instruction:"Write the Urdu word for each number.",
+    cols:["#","Number","Your Answer","Solution"],
+    rows:[
+      ["1","1","ایک / ek"],
+      ["2","2","دو / do"],
+      ["3","3","تین / teen"],
+      ["4","4","چار / char"],
+      ["5","5","پانچ / panch"],
+      ["6","6","چھے / chhe"],
+      ["7","7","سات / saat"],
+      ["8","8","آٹھ / aath"],
+      ["9","9","نو / nau"],
+      ["10","10","دس / das"]
+    ]
+  },
+  {
+    id:5, title:"Family - Immediate — قریبی خاندان",
+    instruction:"Write the Urdu word for each family member.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Mother","ماں / ammi / maa"],
+      ["2","Father","باپ / abbu / baap"],
+      ["3","Brother","بھائی / bhai"],
+      ["4","Sister","بہن / behan"],
+      ["5","Son","بیٹا / beta"],
+      ["6","Daughter","بیٹی / beti"],
+      ["7","Parents","والدین / walidain"],
+      ["8","Children","بچے / bachche"]
+    ]
+  },
+  {
+    id:6, title:"Family - Extended — بڑا خاندان",
+    instruction:"Write the Urdu word for each extended family member or relation.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Grandfather (paternal)","دادا / dada"],
+      ["2","Grandmother (paternal)","دادی / dadi"],
+      ["3","Grandfather (maternal)","نانا / nana"],
+      ["4","Grandmother (maternal)","نانی / nani"],
+      ["5","Husband","شوہر / shohar"],
+      ["6","Wife","بیوی / biwi"],
+      ["7","Friend","دوست / dost"],
+      ["8","Teacher","استاد / ustaad"],
+      ["9","Father (formal)","والد / walid"],
+      ["10","Mother (formal)","والدہ / walida"]
+    ]
+  },
+  {
+    id:7, title:"Colors — رنگ",
+    instruction:"Write the Urdu word for each color.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Red","لال / laal"],
+      ["2","Blue","نیلا / neela"],
+      ["3","Green","سبز / sabz"],
+      ["4","Yellow","پیلا / peela"],
+      ["5","Black","کالا / kaala"],
+      ["6","White","سفید / safaid"],
+      ["7","Orange","نارنجی / naranji"],
+      ["8","Pink","گلابی / gulabi"],
+      ["9","Brown","بھورا / bhoora"],
+      ["10","Purple","جامنی / jamni"]
+    ]
+  },
+  {
+    id:8, title:"Days of the Week — ہفتے کے دن",
+    instruction:"Write the Urdu name for each day.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Monday","پیر / peer"],
+      ["2","Tuesday","منگل / mangal"],
+      ["3","Wednesday","بدھ / budh"],
+      ["4","Thursday","جمعرات / jumerat"],
+      ["5","Friday","جمعہ / juma"],
+      ["6","Saturday","ہفتہ / hafta"],
+      ["7","Sunday","اتوار / itwaar"]
+    ]
+  },
+  {
+    id:9, title:"Body Parts — جسم کے حصے",
+    instruction:"Write the Urdu word for each body part.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Head","سر / sar"],
+      ["2","Eye","آنکھ / aankh"],
+      ["3","Nose","ناک / naak"],
+      ["4","Mouth","منہ / munh"],
+      ["5","Hand","ہاتھ / haath"],
+      ["6","Foot","پاؤں / paon"],
+      ["7","Ear","کان / kaan"],
+      ["8","Teeth","دانت / daant"],
+      ["9","Hair","بال / baal"],
+      ["10","Heart","دل / dil"]
+    ]
+  },
+  {
+    id:10, title:"Common Objects — عام چیزیں",
+    instruction:"Write the Urdu word for each object.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Book","کتاب / kitaab"],
+      ["2","Pen","قلم / qalam"],
+      ["3","Phone","فون / phone"],
+      ["4","Chair","کرسی / kursi"],
+      ["5","Table","میز / maiz"],
+      ["6","House","گھر / ghar"],
+      ["7","School","اسکول / school"],
+      ["8","Door","دروازہ / darwaza"],
+      ["9","Window","کھڑکی / khidki"],
+      ["10","Clock / Watch","گھڑی / ghari"]
+    ]
+  },
+  {
+    id:11, title:"Basic Verbs — بنیادی افعال",
+    instruction:"Write the Urdu infinitive form of each verb.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","To eat","کھانا / khana"],
+      ["2","To drink","پینا / peena"],
+      ["3","To sleep","سونا / sona"],
+      ["4","To go","جانا / jana"],
+      ["5","To come","آنا / aana"],
+      ["6","To sit","بیٹھنا / baithna"],
+      ["7","To stand","کھڑا ہونا / khara hona"],
+      ["8","To read/study","پڑھنا / parhna"],
+      ["9","To write","لکھنا / likhna"],
+      ["10","To speak","بولنا / bolna"]
+    ]
+  },
+  {
+    id:12, title:"Commands (Imperative) — احکام",
+    instruction:"Write the Urdu command form (informal tum).",
+    rule:"Informal (tum): verb stem + و (o). Formal (aap): verb stem + یے (iye/ijiye).",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Eat food!","کھانا کھاؤ / khana khao"],
+      ["2","Drink water!","پانی پیو / pani piyo"],
+      ["3","Come here!","یہاں آؤ / yahan aao"],
+      ["4","Sit here!","یہاں بیٹھو / yahan baitho"],
+      ["5","Go there!","وہاں جاؤ / wahan jao"],
+      ["6","Listen!","سنو / suno"],
+      ["7","Read this!","یہ پڑھو / yeh parho"],
+      ["8","Write!","لکھو / likho"]
+    ]
+  },
+  {
+    id:13, title:"Food & Drinks — کھانا پینا",
+    instruction:"Write the Urdu word for each food or drink item.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Water","پانی / pani"],
+      ["2","Food / Meal","کھانا / khana"],
+      ["3","Tea","چائے / chai"],
+      ["4","Coffee","کافی / coffee"],
+      ["5","Milk","دودھ / doodh"],
+      ["6","Rice","چاول / chawal"],
+      ["7","Bread / Roti","روٹی / roti"],
+      ["8","Apple","سیب / saib"],
+      ["9","Banana","کیلا / kela"],
+      ["10","Egg","انڈا / anda"],
+      ["11","Meat","گوشت / gosht"],
+      ["12","Vegetables","سبزیاں / sabziyan"]
+    ]
+  },
+  {
+    id:14, title:"Question Phrases — سوالیہ فقرے",
+    instruction:"Write the Urdu question phrase.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","What is this?","یہ کیا ہے؟ / yeh kya hai"],
+      ["2","What is your name?","آپ کا نام کیا ہے؟ / aap ka naam kya hai"],
+      ["3","How are you? (to male)","آپ کیسے ہیں؟ / aap kaise hain"],
+      ["4","How are you? (to female)","آپ کیسی ہیں؟ / aap kaisi hain"],
+      ["5","Where is ...?","... کہاں ہے؟ / ... kahan hai"],
+      ["6","When?","کب؟ / kab"],
+      ["7","Why?","کیوں؟ / kyun"],
+      ["8","Who?","کون؟ / kaun"],
+      ["9","How much / How many?","کتنا / کتنے؟ / kitna / kitne"],
+      ["10","Which?","کون سا؟ / kaun sa"]
+    ]
+  },
+  {
+    id:15, title:"Chahiye Expressions — چاہیے کے فقرے",
+    instruction:"Write the Urdu sentence using chahiye (need/want).",
+    rule:"Structure: مجھے (mujhe) + noun + چاہیے (chahiye) = I need ...",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","I need water","مجھے پانی چاہیے / mujhe pani chahiye"],
+      ["2","I need help","مجھے مدد چاہیے / mujhe madad chahiye"],
+      ["3","I need a book","مجھے کتاب چاہیے / mujhe kitaab chahiye"],
+      ["4","I need food","مجھے کھانا چاہیے / mujhe khana chahiye"],
+      ["5","I need rest","مجھے آرام چاہیے / mujhe aaraam chahiye"],
+      ["6","I need a doctor","مجھے ڈاکٹر چاہیے / mujhe doctor chahiye"],
+      ["7","I need time","مجھے وقت چاہیے / mujhe waqt chahiye"],
+      ["8","We need tea","ہمیں چائے چاہیے / hamein chai chahiye"]
+    ]
+  },
+  {
+    id:16, title:"Feelings & States — احساسات",
+    instruction:"Write the Urdu expression for each feeling or state.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","I am hungry","مجھے بھوک لگی ہے / mujhe bhook lagi hai"],
+      ["2","I am thirsty","مجھے پیاس لگی ہے / mujhe pyas lagi hai"],
+      ["3","I am fine / OK","میں ٹھیک ہوں / main theek hoon"],
+      ["4","I am tired","میں تھکا ہوا ہوں / main thaka hua hoon"],
+      ["5","I am happy","میں خوش ہوں / main khush hoon"],
+      ["6","I am sad","میں اداس ہوں / main udaas hoon"],
+      ["7","I am cold","مجھے سردی لگ رہی ہے / mujhe sardi lag rahi hai"],
+      ["8","I am hot","مجھے گرمی لگ رہی ہے / mujhe garmi lag rahi hai"],
+      ["9","I am scared","مجھے ڈر لگ رہا ہے / mujhe dar lag raha hai"],
+      ["10","I am ill / sick","میں بیمار ہوں / main beemar hoon"]
+    ]
+  },
+  {
+    id:17, title:"EN to Urdu Translation — انگریزی سے اردو",
+    instruction:"Translate the English sentence into Urdu.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","My name is Ali.","میرا نام علی ہے۔ / mera naam Ali hai"],
+      ["2","I am from Pakistan.","میں پاکستان سے ہوں۔ / main Pakistan se hoon"],
+      ["3","This is my house.","یہ میرا گھر ہے۔ / yeh mera ghar hai"],
+      ["4","I speak Urdu.","میں اردو بولتا ہوں۔ / main urdu bolta hoon"],
+      ["5","Where is the school?","اسکول کہاں ہے؟ / school kahan hai"],
+      ["6","I need water.","مجھے پانی چاہیے۔ / mujhe pani chahiye"],
+      ["7","Come here please.","براہ کرم یہاں آئیے۔ / barah-e-karam yahan aaiye"],
+      ["8","I am a student.","میں طالب علم ہوں۔ / main talib-e-ilm hoon"],
+      ["9","Thank you very much.","بہت شکریہ۔ / bohot shukriya"],
+      ["10","The weather is good today.","آج موسم اچھا ہے۔ / aaj mausam achha hai"]
+    ]
+  },
+  {
+    id:18, title:"Urdu to EN Translation — اردو سے انگریزی",
+    instruction:"Translate the Urdu sentence into English.",
+    cols:["#","Urdu","Your Answer","Solution"],
+    rows:[
+      ["1","آپ کا نام کیا ہے؟ (aap ka naam kya hai?)","What is your name? / what's your name"],
+      ["2","مجھے بھوک لگی ہے۔ (mujhe bhook lagi hai)","I am hungry. / I'm hungry"],
+      ["3","یہ کتاب ہے۔ (yeh kitaab hai)","This is a book."],
+      ["4","وہ میرا بھائی ہے۔ (woh mera bhai hai)","He is my brother. / that is my brother"],
+      ["5","آپ کہاں رہتے ہیں؟ (aap kahan rehte hain?)","Where do you live?"],
+      ["6","مجھے چائے چاہیے۔ (mujhe chai chahiye)","I need tea. / I want tea"],
+      ["7","آج بہت گرمی ہے۔ (aaj bohot garmi hai)","It is very hot today. / today is very hot"],
+      ["8","خدا حافظ (khuda hafiz)","Goodbye. / goodbye"],
+      ["9","میں پاکستان سے ہوں۔ (main Pakistan se hoon)","I am from Pakistan. / I'm from Pakistan"],
+      ["10","شکریہ بہت مہربانی (shukriya bohot meharbani)","Thank you, very kind. / thanks, very kind / thank you very much"]
+    ]
+  },
+  {
+    id:19, title:"Error Correction — غلطی درست کریں",
+    instruction:"Each sentence has ONE mistake. Write the corrected Urdu sentence.",
+    cols:["#","Wrong Sentence","Error Hint","Your Answer","Solution"],
+    rows:[
+      ["1","میرا نام ہے علی (mera naam hai Ali)","word order","میرا نام علی ہے / mera naam Ali hai"],
+      ["2","مجھے پانی ہے چاہیے (mujhe pani hai chahiye)","extra word","مجھے پانی چاہیے / mujhe pani chahiye"],
+      ["3","آپ کیسے ہے؟ (aap kaise hai?)","verb agreement (formal)","آپ کیسے ہیں؟ / aap kaise hain"],
+      ["4","وہ میری بھائی ہے (woh meri bhai hai)","possessive gender","وہ میرا بھائی ہے / woh mera bhai hai"],
+      ["5","میں جانا ہے (main jana hai)","auxiliary verb","مجھے جانا ہے / mujhe jana hai"],
+      ["6","یہ کتاب ہیں (yeh kitaab hain)","singular/plural mismatch","یہ کتاب ہے / yeh kitaab hai"]
+    ]
+  },
+  {
+    id:20, title:"Dialogue Completion — مکالمہ مکمل کریں", type:"dialogue",
+    instruction:"Fill in the blanks with the correct Urdu.",
+    lines:[
+      {speaker:"A", parts:["!السلام علیکم ",{blank:true,answer:"آپ کیسے ہیں؟ / aap kaise hain",hint:"How are you? (to male)"}]},
+      {speaker:"B", parts:[{blank:true,answer:"وعلیکم السلام / wa-alaikum-assalam",hint:"Reply to salam"},", میں ٹھیک ہوں۔ شکریہ!"]},
+      {speaker:"A", parts:[{blank:true,answer:"آپ کا نام کیا ہے؟ / aap ka naam kya hai",hint:"What is your name?"}]},
+      {speaker:"B", parts:["میرا نام احمد ہے۔ ",{blank:true,answer:"آپ کا نام؟ / aap ka naam",hint:"And your name?"}]},
+      {speaker:"A", parts:["میرا نام سارہ ہے۔ ",{blank:true,answer:"آپ کہاں سے ہیں؟ / aap kahan se hain",hint:"Where are you from?"}]},
+      {speaker:"B", parts:[{blank:true,answer:"میں لاہور سے ہوں / main Lahore se hoon",hint:"I am from Lahore"},"."]},
+      {speaker:"A", parts:[{blank:true,answer:"آپ سے مل کر خوشی ہوئی / aap se mil kar khushi hui",hint:"Nice to meet you"},"!"]},
+      {speaker:"B", parts:["مجھے بھی! ",{blank:true,answer:"خدا حافظ / khuda hafiz",hint:"Goodbye"},"!"]}
+    ]
+  },
+  {
+    id:21, title:"Multiple Choice Grammar — گرامر کے سوالات", type:"mc",
+    instruction:"Select the correct answer.",
+    questions:[
+      {q:"\"I need water\" in Urdu is:", options:["میں پانی ہوں","مجھے پانی چاہیے","میرا پانی ہے","پانی مجھے ہے"], correct:1},
+      {q:"The correct way to say \"How are you?\" to a woman formally is:", options:["تم کیسی ہو؟","آپ کیسے ہیں؟","آپ کیسی ہیں؟","تو کیسی ہے؟"], correct:2},
+      {q:"\"میرا\" (mera) is used with:", options:["feminine nouns","masculine singular nouns","plural nouns","all nouns"], correct:1},
+      {q:"The Urdu word for \"thank you\" is:", options:["خدا حافظ","معاف کیجیے","شکریہ","براہ کرم"], correct:2},
+      {q:"\"مجھے بھوک لگی ہے\" means:", options:["I am thirsty","I am tired","I am hungry","I am cold"], correct:2},
+      {q:"The formal plural \"you\" in Urdu is:", options:["تو","تم","آپ","ہم"], correct:2},
+      {q:"\"خدا حافظ\" means:", options:["Hello","Thank you","Sorry","Goodbye"], correct:3},
+      {q:"In Urdu, \"ہے\" (hai) is used with:", options:["first person (I)","second person informal (you)","third person singular (he/she/it)","first person plural (we)"], correct:2},
+      {q:"\"چاہیے\" (chahiye) expresses:", options:["past tense","future tense","need or requirement","a question"], correct:2},
+      {q:"The Urdu sentence order is typically:", options:["Subject-Verb-Object","Subject-Object-Verb","Verb-Subject-Object","Object-Subject-Verb"], correct:1}
+    ]
+  },
+  {
+    id:22, title:"Gender Distinctions — مذکر و مونث",
+    instruction:"Write the correct gender-specific form.",
+    rule:"Masculine (مذکر): adjectives ending in ا (a). Feminine (مونث): adjectives ending in ی (i). Example: اچھا (achha, m.) / اچھی (achhi, f.)",
+    cols:["#","Context","Your Answer","Solution"],
+    rows:[
+      ["1","Good (masculine)","اچھا / achha"],
+      ["2","Good (feminine)","اچھی / achhi"],
+      ["3","How are you? (to a man)","آپ کیسے ہیں؟ / aap kaise hain"],
+      ["4","How are you? (to a woman)","آپ کیسی ہیں؟ / aap kaisi hain"],
+      ["5","Big (masculine)","بڑا / bara"],
+      ["6","Big (feminine)","بڑی / bari"],
+      ["7","He is good","وہ اچھا ہے / woh achha hai"],
+      ["8","She is good","وہ اچھی ہے / woh achhi hai"],
+      ["9","My (with m. noun, e.g. ghar)","میرا / mera"],
+      ["10","My (with f. noun, e.g. kitaab)","میری / meri"]
+    ]
+  },
+  {
+    id:23, title:"Everyday Sentences — روزمرہ کے فقرے",
+    instruction:"Write the Urdu translation for each everyday phrase.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","I don't understand","میں نہیں سمجھا / main nahi samjha"],
+      ["2","Please speak slowly","آہستہ بولیے / aahista boliye"],
+      ["3","Where is the bathroom?","غسل خانہ کہاں ہے؟ / ghusl khana kahan hai / bathroom kahan hai"],
+      ["4","How much is this?","یہ کتنے کا ہے؟ / yeh kitne ka hai"],
+      ["5","I don't know","مجھے نہیں معلوم / mujhe nahi maloom"],
+      ["6","Wait a moment","ایک لمحہ رکیے / ek lamha rukiye"],
+      ["7","What time is it?","کیا وقت ہوا ہے؟ / kya waqt hua hai"],
+      ["8","I like this","مجھے یہ پسند ہے / mujhe yeh pasand hai"],
+      ["9","Let's go","چلیں / chalen / chalein"],
+      ["10","No problem","کوئی بات نہیں / koi baat nahi"]
+    ]
+  },
+  {
+    id:24, title:"Vocabulary Quick Fire — فوری الفاظ",
+    instruction:"Translate as fast as you can.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","water","پانی / pani"],
+      ["2","food","کھانا / khana"],
+      ["3","house","گھر / ghar"],
+      ["4","book","کتاب / kitaab"],
+      ["5","day","دن / din"],
+      ["6","night","رات / raat"],
+      ["7","big","بڑا / bara"],
+      ["8","small","چھوٹا / chhota"],
+      ["9","good","اچھا / achha"],
+      ["10","bad","برا / bura"],
+      ["11","and","اور / aur"],
+      ["12","but","لیکن / lekin / magar"],
+      ["13","with","کے ساتھ / ke saath"],
+      ["14","without","کے بغیر / ke baghair"],
+      ["15","always","ہمیشہ / hamesha"],
+      ["16","never","کبھی نہیں / kabhi nahi"],
+      ["17","today","آج / aaj"],
+      ["18","tomorrow","کل / kal"],
+      ["19","yesterday","کل / kal"],
+      ["20","now","ابھی / abhi"]
+    ]
+  },
+  {
+    id:25, title:"Mixed Challenge — مکمل امتحان",
+    instruction:"These combine multiple concepts. Take your time.",
+    cols:["#","English","Your Answer","Solution"],
+    rows:[
+      ["1","Hello, my name is Sara and I am from Karachi.","السلام علیکم، میرا نام سارہ ہے اور میں کراچی سے ہوں / assalam-o-alaikum mera naam Sara hai aur main Karachi se hoon"],
+      ["2","I need a book and a pen.","مجھے کتاب اور قلم چاہیے / mujhe kitaab aur qalam chahiye"],
+      ["3","How are you? I am fine, thank you.","آپ کیسے ہیں؟ میں ٹھیک ہوں، شکریہ / aap kaise hain? main theek hoon, shukriya"],
+      ["4","I am hungry, I need food.","مجھے بھوک لگی ہے، مجھے کھانا چاہیے / mujhe bhook lagi hai, mujhe khana chahiye"],
+      ["5","Where do you live?","آپ کہاں رہتے ہیں؟ / aap kahan rehte hain"],
+      ["6","Please sit here.","براہ کرم یہاں بیٹھیے / barah-e-karam yahan baithiye"],
+      ["7","He is my teacher.","وہ میرے استاد ہیں / woh mere ustaad hain"],
+      ["8","Goodbye, see you later.","خدا حافظ، پھر ملیں گے / khuda hafiz, phir milenge"]
+    ]
+  }
+];
+
+const SLUGS = ["pronouns","intro","polite","numbers","family-immediate","family-extended","colors","days","body-parts","objects","verbs","commands","food-drinks","questions","chahiye","feelings","eng-to-urdu","urdu-to-eng","error-correction","dialogue","multiple-choice","gender","everyday-sentences","vocab-quick-fire","mixed-challenge"];
+
+const THEORY = {
+  1: '<h3>Greetings & Responses (سلام و جواب)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th></tr><tr><td dir="rtl">السلام علیکم</td><td>Assalam-o-Alaikum</td><td>Peace be upon you</td></tr><tr><td dir="rtl">وعلیکم السلام</td><td>Wa-Alaikum-Assalam</td><td>And upon you peace</td></tr><tr><td dir="rtl">صبح بخیر</td><td>Subah Bakhair</td><td>Good morning</td></tr><tr><td dir="rtl">شام بخیر</td><td>Shaam Bakhair</td><td>Good evening</td></tr><tr><td dir="rtl">خدا حافظ</td><td>Khuda Hafiz</td><td>Goodbye</td></tr><tr><td dir="rtl">آپ کیسے ہیں؟</td><td>Aap kaise hain?</td><td>How are you? (to male)</td></tr><tr><td dir="rtl">آپ کیسی ہیں؟</td><td>Aap kaisi hain?</td><td>How are you? (to female)</td></tr></table><p><span class="rule">Gender note:</span> When asking "How are you?", use <strong>کیسے</strong> (kaise) for males and <strong>کیسی</strong> (kaisi) for females.</p><p><span class="rule">Formality levels:</span></p><ul><li><strong>تو</strong> (tu) = very informal, intimate, can be rude</li><li><strong>تم</strong> (tum) = informal, friends, younger people</li><li><strong>آپ</strong> (aap) = formal, respectful, elders, strangers</li></ul>',
+
+  2: '<h3>Self-Introduction (تعارف)</h3><p><span class="rule">Key patterns:</span></p><table><tr><th>Pattern</th><th>Urdu</th><th>Transliteration</th></tr><tr><td>My name is ___</td><td dir="rtl">میرا نام ___ ہے</td><td>Mera naam ___ hai</td></tr><tr><td>What is your name?</td><td dir="rtl">آپ کا نام کیا ہے؟</td><td>Aap ka naam kya hai?</td></tr><tr><td>I am from ___</td><td dir="rtl">میں ___ سے ہوں</td><td>Main ___ se hoon</td></tr><tr><td>I live in ___</td><td dir="rtl">میں ___ میں رہتا/رہتی ہوں</td><td>Main ___ mein rehta/rehti hoon</td></tr></table><p><span class="rule">Gender:</span> Male speakers say <strong>رہتا</strong> (rehta), female speakers say <strong>رہتی</strong> (rehti). Similarly <strong>بولتا/بولتی</strong> (bolta/bolti).</p><p><span class="rule">Possessives:</span></p><ul><li>میرا (mera) = my (with masculine nouns)</li><li>میری (meri) = my (with feminine nouns)</li><li>آپ کا (aap ka) = your (with masculine nouns)</li><li>آپ کی (aap ki) = your (with feminine nouns)</li></ul>',
+
+  3: '<h3>Polite Phrases (شائستہ الفاظ)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>When to Use</th></tr><tr><td dir="rtl">شکریہ</td><td>Shukriya</td><td>Thank you</td><td>Anytime</td></tr><tr><td dir="rtl">کوئی بات نہیں</td><td>Koi baat nahi</td><td>No problem / It\'s nothing</td><td>Reply to shukriya</td></tr><tr><td dir="rtl">براہ کرم</td><td>Barah-e-karam</td><td>Please</td><td>Making requests</td></tr><tr><td dir="rtl">معاف کیجیے</td><td>Maaf kijiye</td><td>Excuse me / Sorry</td><td>Formal apology</td></tr><tr><td dir="rtl">ان شاء اللہ</td><td>Inshallah</td><td>God willing</td><td>Future plans</td></tr><tr><td dir="rtl">الحمد للہ</td><td>Alhamdulillah</td><td>Thanks be to God</td><td>Expressing gratitude</td></tr><tr><td dir="rtl">خوش آمدید</td><td>Khush Aamdeed</td><td>Welcome</td><td>Greeting guests</td></tr><tr><td dir="rtl">مبارک ہو</td><td>Mubarak ho</td><td>Congratulations</td><td>Celebrations</td></tr></table><p><span class="rule">Cultural note:</span> Urdu culture places great emphasis on polite speech. Using <strong>براہ کرم</strong> (please) and <strong>شکریہ</strong> (thank you) is essential.</p>',
+
+  4: '<h3>Numbers 1-10 (نمبر)</h3><table><tr><th>#</th><th>Urdu</th><th>Transliteration</th><th>#</th><th>Urdu</th><th>Transliteration</th></tr><tr><td>1</td><td dir="rtl">ایک</td><td>ek</td><td>6</td><td dir="rtl">چھے</td><td>chhe</td></tr><tr><td>2</td><td dir="rtl">دو</td><td>do</td><td>7</td><td dir="rtl">سات</td><td>saat</td></tr><tr><td>3</td><td dir="rtl">تین</td><td>teen</td><td>8</td><td dir="rtl">آٹھ</td><td>aath</td></tr><tr><td>4</td><td dir="rtl">چار</td><td>char</td><td>9</td><td dir="rtl">نو</td><td>nau</td></tr><tr><td>5</td><td dir="rtl">پانچ</td><td>panch</td><td>10</td><td dir="rtl">دس</td><td>das</td></tr></table><p><span class="rule">Higher numbers:</span> 11=گیارہ (gyarah), 12=بارہ (barah), 20=بیس (bees), 30=تیس (tees), 40=چالیس (chalees), 50=پچاس (pachaas), 100=سو (sau), 1000=ہزار (hazaar)</p><p><span class="rule">Note:</span> Urdu numbers are largely shared with Hindi. The script uses Eastern Arabic-Indic numerals in formal contexts but Western numerals are also widely used.</p>',
+
+  5: '<h3>Immediate Family (قریبی خاندان)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>Notes</th></tr><tr><td dir="rtl">ماں / امی</td><td>Maa / Ammi</td><td>Mother</td><td>امی is more affectionate</td></tr><tr><td dir="rtl">باپ / ابو</td><td>Baap / Abbu</td><td>Father</td><td>ابو is more affectionate</td></tr><tr><td dir="rtl">بھائی</td><td>Bhai</td><td>Brother</td><td></td></tr><tr><td dir="rtl">بہن</td><td>Behan</td><td>Sister</td><td></td></tr><tr><td dir="rtl">بیٹا</td><td>Beta</td><td>Son</td><td>Also used as term of endearment</td></tr><tr><td dir="rtl">بیٹی</td><td>Beti</td><td>Daughter</td><td></td></tr></table><p><span class="rule">Possessives with family:</span></p><ul><li>میرا بھائی (mera bhai) = my brother (masculine possessive)</li><li>میری بہن (meri behan) = my sister (feminine possessive)</li><li>میرے والدین (mere walidain) = my parents (plural possessive)</li></ul>',
+
+  6: '<h3>Extended Family (بڑا خاندان)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th></tr><tr><td dir="rtl">دادا</td><td>Dada</td><td>Paternal grandfather</td></tr><tr><td dir="rtl">دادی</td><td>Dadi</td><td>Paternal grandmother</td></tr><tr><td dir="rtl">نانا</td><td>Nana</td><td>Maternal grandfather</td></tr><tr><td dir="rtl">نانی</td><td>Nani</td><td>Maternal grandmother</td></tr><tr><td dir="rtl">شوہر</td><td>Shohar</td><td>Husband</td></tr><tr><td dir="rtl">بیوی</td><td>Biwi</td><td>Wife</td></tr><tr><td dir="rtl">والد</td><td>Walid</td><td>Father (formal)</td></tr><tr><td dir="rtl">والدہ</td><td>Walida</td><td>Mother (formal)</td></tr></table><p><span class="rule">Important distinction:</span> Urdu has different words for paternal vs maternal grandparents, unlike English. دادا/دادی = father\'s side, نانا/نانی = mother\'s side.</p><p><span class="rule">Formal vs informal:</span> والد/والدہ (walid/walida) are Arabic-origin formal terms, while ابو/امی (abbu/ammi) are everyday Urdu terms for parents.</p>',
+
+  7: '<h3>Colors (رنگ)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>Gender Note</th></tr><tr><td dir="rtl">لال</td><td>Laal</td><td>Red</td><td>Same for m/f</td></tr><tr><td dir="rtl">نیلا / نیلی</td><td>Neela / Neeli</td><td>Blue</td><td>م / مو</td></tr><tr><td dir="rtl">سبز</td><td>Sabz</td><td>Green</td><td>Same for m/f</td></tr><tr><td dir="rtl">پیلا / پیلی</td><td>Peela / Peeli</td><td>Yellow</td><td>م / مو</td></tr><tr><td dir="rtl">کالا / کالی</td><td>Kaala / Kaali</td><td>Black</td><td>م / مو</td></tr><tr><td dir="rtl">سفید</td><td>Safaid</td><td>White</td><td>Same for m/f</td></tr><tr><td dir="rtl">نارنجی</td><td>Naranji</td><td>Orange</td><td>Same for m/f</td></tr><tr><td dir="rtl">گلابی</td><td>Gulabi</td><td>Pink</td><td>Same for m/f</td></tr></table><p><span class="rule">Gender agreement:</span> Colors ending in ا (a) change to ی (i) for feminine nouns:</p><ul><li>نیلا کمرہ (neela kamra) = blue room (m.)</li><li>نیلی کتاب (neeli kitaab) = blue book (f.)</li></ul><p><span class="rule">Colors ending in a consonant or ی</span> (like سبز, سفید, نارنجی, گلابی) do NOT change for gender.</p>',
+
+  8: '<h3>Days of the Week (ہفتے کے دن)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th></tr><tr><td dir="rtl">پیر</td><td>Peer</td><td>Monday</td></tr><tr><td dir="rtl">منگل</td><td>Mangal</td><td>Tuesday</td></tr><tr><td dir="rtl">بدھ</td><td>Budh</td><td>Wednesday</td></tr><tr><td dir="rtl">جمعرات</td><td>Jumerat</td><td>Thursday</td></tr><tr><td dir="rtl">جمعہ</td><td>Juma</td><td>Friday</td></tr><tr><td dir="rtl">ہفتہ</td><td>Hafta</td><td>Saturday</td></tr><tr><td dir="rtl">اتوار</td><td>Itwaar</td><td>Sunday</td></tr></table><p><span class="rule">Cultural note:</span> جمعہ (Friday) holds special significance as the day of congregational prayer in Islam. Most offices and schools may have a day off on Friday or Sunday depending on the country.</p><p><span class="rule">Usage:</span> "آج کون سا دن ہے؟" (Aaj kaun sa din hai?) = What day is it today?</p>',
+
+  9: '<h3>Body Parts (جسم کے حصے)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>Gender</th></tr><tr><td dir="rtl">سر</td><td>Sar</td><td>Head</td><td>m.</td></tr><tr><td dir="rtl">آنکھ</td><td>Aankh</td><td>Eye</td><td>f.</td></tr><tr><td dir="rtl">ناک</td><td>Naak</td><td>Nose</td><td>f.</td></tr><tr><td dir="rtl">منہ</td><td>Munh</td><td>Mouth</td><td>m.</td></tr><tr><td dir="rtl">ہاتھ</td><td>Haath</td><td>Hand</td><td>m.</td></tr><tr><td dir="rtl">پاؤں</td><td>Paon</td><td>Foot</td><td>m.</td></tr><tr><td dir="rtl">کان</td><td>Kaan</td><td>Ear</td><td>m.</td></tr><tr><td dir="rtl">دانت</td><td>Daant</td><td>Teeth</td><td>m.</td></tr><tr><td dir="rtl">بال</td><td>Baal</td><td>Hair</td><td>m.</td></tr><tr><td dir="rtl">دل</td><td>Dil</td><td>Heart</td><td>m.</td></tr></table><p><span class="rule">Usage:</span> "میرا سر درد کر رہا ہے" (mera sar dard kar raha hai) = My head is aching. "میری آنکھ" (meri aankh) = my eye (feminine, so use مری).</p>',
+
+  10: '<h3>Common Objects (عام چیزیں)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>Gender</th></tr><tr><td dir="rtl">کتاب</td><td>Kitaab</td><td>Book</td><td>f.</td></tr><tr><td dir="rtl">قلم</td><td>Qalam</td><td>Pen</td><td>m.</td></tr><tr><td dir="rtl">کرسی</td><td>Kursi</td><td>Chair</td><td>f.</td></tr><tr><td dir="rtl">میز</td><td>Maiz</td><td>Table</td><td>f.</td></tr><tr><td dir="rtl">گھر</td><td>Ghar</td><td>House</td><td>m.</td></tr><tr><td dir="rtl">دروازہ</td><td>Darwaza</td><td>Door</td><td>m.</td></tr><tr><td dir="rtl">کھڑکی</td><td>Khidki</td><td>Window</td><td>f.</td></tr><tr><td dir="rtl">گھڑی</td><td>Ghari</td><td>Clock/Watch</td><td>f.</td></tr></table><p><span class="rule">Gender rules in Urdu:</span></p><ul><li>Most nouns ending in <strong>ا</strong> (a) are masculine: دروازہ (darwaza), کمرہ (kamra)</li><li>Most nouns ending in <strong>ی</strong> (i) are feminine: کرسی (kursi), کھڑکی (khidki)</li><li>Many exceptions exist and must be memorized: کتاب (f.), قلم (m.)</li></ul>',
+
+  11: '<h3>Basic Verbs (بنیادی افعال)</h3><table><tr><th>Urdu Infinitive</th><th>Transliteration</th><th>English</th><th>Verb Stem</th></tr><tr><td dir="rtl">کھانا</td><td>Khana</td><td>To eat</td><td>کھا (kha)</td></tr><tr><td dir="rtl">پینا</td><td>Peena</td><td>To drink</td><td>پی (pee)</td></tr><tr><td dir="rtl">سونا</td><td>Sona</td><td>To sleep</td><td>سو (so)</td></tr><tr><td dir="rtl">جانا</td><td>Jana</td><td>To go</td><td>جا (ja)</td></tr><tr><td dir="rtl">آنا</td><td>Aana</td><td>To come</td><td>آ (aa)</td></tr><tr><td dir="rtl">بیٹھنا</td><td>Baithna</td><td>To sit</td><td>بیٹھ (baith)</td></tr><tr><td dir="rtl">پڑھنا</td><td>Parhna</td><td>To read/study</td><td>پڑھ (parh)</td></tr><tr><td dir="rtl">لکھنا</td><td>Likhna</td><td>To write</td><td>لکھ (likh)</td></tr><tr><td dir="rtl">بولنا</td><td>Bolna</td><td>To speak</td><td>بول (bol)</td></tr></table><p><span class="rule">Infinitive form:</span> All Urdu infinitives end in <strong>نا</strong> (na). Remove نا to get the verb stem.</p><p><span class="rule">Present tense:</span> Stem + تا/تی/تے (ta/ti/te) + ہوں/ہے/ہیں (hoon/hai/hain)</p><ul><li>میں کھاتا ہوں (main khata hoon) = I eat (male)</li><li>میں کھاتی ہوں (main khati hoon) = I eat (female)</li></ul>',
+
+  12: '<h3>Commands / Imperative (احکام)</h3><p><span class="rule">Three levels of formality:</span></p><table><tr><th>Level</th><th>Pronoun</th><th>Pattern</th><th>Example: آنا (to come)</th></tr><tr><td>Very informal</td><td>تو (tu)</td><td>Bare stem</td><td>آ (aa) = come!</td></tr><tr><td>Informal</td><td>تم (tum)</td><td>Stem + و (o)</td><td>آؤ (aao) = come!</td></tr><tr><td>Formal</td><td>آپ (aap)</td><td>Stem + یے/ئیے (iye)</td><td>آئیے (aaiye) = please come!</td></tr></table><p><span class="rule">Examples across formality:</span></p><ul><li>کھانا: کھا (kha) / کھاؤ (khao) / کھائیے (khaiye)</li><li>بیٹھنا: بیٹھ (baith) / بیٹھو (baitho) / بیٹھیے (baithiye)</li><li>سننا: سن (sun) / سنو (suno) / سنیے (suniye)</li></ul><p><span class="rule">Negative command:</span> Add <strong>مت</strong> (mat) before the verb: مت جاؤ (mat jao) = don\'t go!</p>',
+
+  13: '<h3>Food & Drinks (کھانا پینا)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>Gender</th></tr><tr><td dir="rtl">پانی</td><td>Pani</td><td>Water</td><td>m.</td></tr><tr><td dir="rtl">چائے</td><td>Chai</td><td>Tea</td><td>f.</td></tr><tr><td dir="rtl">دودھ</td><td>Doodh</td><td>Milk</td><td>m.</td></tr><tr><td dir="rtl">چاول</td><td>Chawal</td><td>Rice</td><td>m.</td></tr><tr><td dir="rtl">روٹی</td><td>Roti</td><td>Bread/Roti</td><td>f.</td></tr><tr><td dir="rtl">سیب</td><td>Saib</td><td>Apple</td><td>m.</td></tr><tr><td dir="rtl">کیلا</td><td>Kela</td><td>Banana</td><td>m.</td></tr><tr><td dir="rtl">انڈا</td><td>Anda</td><td>Egg</td><td>m.</td></tr><tr><td dir="rtl">گوشت</td><td>Gosht</td><td>Meat</td><td>m.</td></tr><tr><td dir="rtl">سبزیاں</td><td>Sabziyan</td><td>Vegetables</td><td>f. pl.</td></tr></table><p><span class="rule">Ordering food:</span></p><ul><li>مجھے چائے دیجیے (mujhe chai dijiye) = Please give me tea</li><li>کھانا تیار ہے (khana tayyar hai) = Food is ready</li></ul>',
+
+  14: '<h3>Question Words (سوالیہ الفاظ)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th><th>Example</th></tr><tr><td dir="rtl">کیا</td><td>Kya</td><td>What</td><td>یہ کیا ہے؟ (Yeh kya hai?)</td></tr><tr><td dir="rtl">کون</td><td>Kaun</td><td>Who</td><td>یہ کون ہے؟ (Yeh kaun hai?)</td></tr><tr><td dir="rtl">کہاں</td><td>Kahan</td><td>Where</td><td>آپ کہاں ہیں؟ (Aap kahan hain?)</td></tr><tr><td dir="rtl">کب</td><td>Kab</td><td>When</td><td>آپ کب آئیں گے؟ (Aap kab aainge?)</td></tr><tr><td dir="rtl">کیوں</td><td>Kyun</td><td>Why</td><td>کیوں نہیں؟ (Kyun nahi?)</td></tr><tr><td dir="rtl">کیسے / کیسی</td><td>Kaise / Kaisi</td><td>How</td><td>آپ کیسے ہیں؟</td></tr><tr><td dir="rtl">کتنا / کتنے</td><td>Kitna / Kitne</td><td>How much/many</td><td>کتنے کا ہے؟ (Kitne ka hai?)</td></tr><tr><td dir="rtl">کون سا</td><td>Kaun sa</td><td>Which</td><td>کون سا رنگ؟ (Kaun sa rang?)</td></tr></table><p><span class="rule">کیا as question marker:</span> کیا at the start of a sentence turns it into a yes/no question: کیا آپ ٹھیک ہیں؟ (Kya aap theek hain?) = Are you fine?</p>',
+
+  15: '<h3>Chahiye Expressions (چاہیے)</h3><p><span class="rule">Structure:</span> Subject (in oblique case) + noun + چاہیے</p><table><tr><th>Subject</th><th>Oblique Form</th><th>Example</th></tr><tr><td>میں (I)</td><td>مجھے (mujhe)</td><td>مجھے پانی چاہیے (I need water)</td></tr><tr><td>تم (you, informal)</td><td>تمہیں (tumhein)</td><td>تمہیں مدد چاہیے (You need help)</td></tr><tr><td>آپ (you, formal)</td><td>آپ کو (aap ko)</td><td>آپ کو آرام چاہیے (You need rest)</td></tr><tr><td>وہ (he/she)</td><td>اسے (use)</td><td>اسے کتاب چاہیے (He/she needs a book)</td></tr><tr><td>ہم (we)</td><td>ہمیں (hamein)</td><td>ہمیں وقت چاہیے (We need time)</td></tr></table><p><span class="rule">Key point:</span> چاہیے does NOT conjugate, it stays the same regardless of subject, gender, or number.</p><p><span class="rule">With verbs:</span> مجھے + infinitive + چاہیے = I should / I need to: مجھے جانا چاہیے (mujhe jana chahiye) = I should go.</p>',
+
+  16: '<h3>Feelings & States (احساسات)</h3><p><span class="rule">Two patterns for expressing feelings:</span></p><p><strong>Pattern 1: Subject + adjective + ہوں/ہے/ہیں</strong></p><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th></tr><tr><td dir="rtl">میں خوش ہوں</td><td>Main khush hoon</td><td>I am happy</td></tr><tr><td dir="rtl">میں اداس ہوں</td><td>Main udaas hoon</td><td>I am sad</td></tr><tr><td dir="rtl">میں ٹھیک ہوں</td><td>Main theek hoon</td><td>I am fine</td></tr><tr><td dir="rtl">میں بیمار ہوں</td><td>Main beemar hoon</td><td>I am sick</td></tr></table><p><strong>Pattern 2: مجھے + noun + لگی/لگ رہی ہے</strong> (physical sensations)</p><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th></tr><tr><td dir="rtl">مجھے بھوک لگی ہے</td><td>Mujhe bhook lagi hai</td><td>I am hungry</td></tr><tr><td dir="rtl">مجھے پیاس لگی ہے</td><td>Mujhe pyas lagi hai</td><td>I am thirsty</td></tr><tr><td dir="rtl">مجھے سردی لگ رہی ہے</td><td>Mujhe sardi lag rahi hai</td><td>I am cold</td></tr><tr><td dir="rtl">مجھے ڈر لگ رہا ہے</td><td>Mujhe dar lag raha hai</td><td>I am scared</td></tr></table><p><span class="rule">Note:</span> Like Italian\'s "ho fame" (I have hunger), Urdu uses a dative construction: "مجھے بھوک لگی ہے" literally = "to me hunger has attached."</p>',
+
+  17: '<h3>Translation Tips: English to Urdu</h3><p><span class="rule">Word order:</span> Urdu uses SOV (Subject-Object-Verb), unlike English SVO:</p><ul><li>English: I eat food. (SVO)</li><li>Urdu: میں کھانا کھاتا ہوں (Main khana khata hoon) = I food eat. (SOV)</li></ul><p><span class="rule">Key differences:</span></p><ul><li>Verb always goes at the end</li><li>Postpositions instead of prepositions: میز پر (maiz par) = table on (= on the table)</li><li>Adjectives come before the noun: بڑا گھر (bara ghar) = big house</li><li>No definite/indefinite articles (no "the" or "a")</li></ul><p><span class="rule">Common patterns:</span></p><ul><li>"My name is ___" = میرا نام ___ ہے (lit: my name ___ is)</li><li>"I am from ___" = میں ___ سے ہوں (lit: I ___ from am)</li><li>"I need ___" = مجھے ___ چاہیے (lit: to-me ___ is-needed)</li></ul>',
+
+  18: '<h3>Translation Tips: Urdu to English</h3><p><span class="rule">Recognizing verb forms:</span></p><ul><li>ہوں (hoon) = am (first person: میں)</li><li>ہے (hai) = is (third person singular: وہ, یہ)</li><li>ہیں (hain) = are (plural/formal: آپ, وہ pl.)</li><li>ہو (ho) = are (informal: تم)</li></ul><p><span class="rule">Common sentence endings:</span></p><ul><li>... تا/تی ہوں = I do (habitual present)</li><li>... رہا/رہی ہوں = I am doing (progressive)</li><li>... چاہیے = is needed / should</li><li>... لگی/لگا ہے = physical sensation (hunger, thirst, etc.)</li></ul><p><span class="rule">Watch for postpositions:</span></p><ul><li>میں (mein) = in</li><li>پر (par) = on</li><li>سے (se) = from, with, by</li><li>کو (ko) = to (object marker)</li><li>کا/کی/کے (ka/ki/ke) = of, possessive</li></ul>',
+
+  19: '<h3>Common Error Patterns</h3><ul><li><span class="rule">Word order:</span> "میرا نام ہے علی" is awkward. Correct: "میرا نام علی ہے" (verb goes at the end).</li><li><span class="rule">Extra auxiliaries:</span> "مجھے پانی ہے چاہیے" has an extra ہے. Correct: "مجھے پانی چاہیے".</li><li><span class="rule">Verb agreement:</span> "آپ کیسے ہے" uses singular ہے with formal آپ. Correct: "آپ کیسے ہیں" (ہیں for آپ).</li><li><span class="rule">Possessive gender:</span> "وہ میری بھائی ہے" uses feminine میری with masculine بھائی. Correct: "وہ میرا بھائی ہے".</li><li><span class="rule">Chahiye construction:</span> "میں جانا ہے" mixes nominative with chahiye pattern. Correct: "مجھے جانا ہے" (oblique case with chahiye implied).</li><li><span class="rule">Number agreement:</span> "یہ کتاب ہیں" uses plural ہیں with singular کتاب. Correct: "یہ کتاب ہے".</li></ul>',
+
+  20: '<h3>Conversation Patterns (مکالمہ)</h3><p><span class="rule">Meeting someone new:</span></p><ul><li>A: السلام علیکم! (Peace be upon you!)</li><li>B: وعلیکم السلام! (And upon you peace!)</li><li>A: آپ کا نام کیا ہے؟ (What is your name?)</li><li>B: میرا نام ___ ہے۔ (My name is ___.)</li><li>A: آپ سے مل کر خوشی ہوئی! (Nice to meet you!)</li></ul><p><span class="rule">Asking about wellbeing:</span></p><ul><li>آپ کیسے ہیں؟ (to male) / آپ کیسی ہیں؟ (to female)</li><li>Reply: میں ٹھیک ہوں، شکریہ۔ آپ سنائیے؟ (I\'m fine, thank you. How about you?)</li></ul><p><span class="rule">Asking about origin:</span></p><ul><li>آپ کہاں سے ہیں؟ (Where are you from?)</li><li>میں ___ سے ہوں۔ (I am from ___.)</li></ul>',
+
+  21: '<h3>Grammar Review - Key Rules</h3><p><span class="rule">Sentence order:</span> SOV (Subject-Object-Verb)</p><p><span class="rule">Verb "to be" (ہونا):</span></p><table><tr><th>Pronoun</th><th>Present</th></tr><tr><td>میں (I)</td><td>ہوں (hoon)</td></tr><tr><td>تو (you, very informal)</td><td>ہے (hai)</td></tr><tr><td>تم (you, informal)</td><td>ہو (ho)</td></tr><tr><td>آپ (you, formal)</td><td>ہیں (hain)</td></tr><tr><td>وہ/یہ (he/she/it/this/that)</td><td>ہے (hai)</td></tr><tr><td>وہ/یہ (they/these/those)</td><td>ہیں (hain)</td></tr><tr><td>ہم (we)</td><td>ہیں (hain)</td></tr></table><p><span class="rule">Gender:</span> All nouns are masculine or feminine. Adjectives and verbs agree.</p><p><span class="rule">Postpositions:</span> میں (in), پر (on), سے (from), کو (to), کا/کی/کے (of)</p><p><span class="rule">Negation:</span> نہیں (nahi) = not. Goes before the verb: میں نہیں جاؤں گا (I will not go).</p>',
+
+  22: '<h3>Gender Distinctions (مذکر و مونث)</h3><p><span class="rule">Adjective agreement:</span></p><table><tr><th>Masculine</th><th>Feminine</th><th>English</th></tr><tr><td>اچھا (achha)</td><td>اچھی (achhi)</td><td>good</td></tr><tr><td>بڑا (bara)</td><td>بڑی (bari)</td><td>big</td></tr><tr><td>چھوٹا (chhota)</td><td>چھوٹی (chhoti)</td><td>small</td></tr><tr><td>کیسا (kaisa)</td><td>کیسی (kaisi)</td><td>how (adj.)</td></tr><tr><td>میرا (mera)</td><td>میری (meri)</td><td>my</td></tr><tr><td>تمہارا (tumhara)</td><td>تمہاری (tumhari)</td><td>your</td></tr></table><p><span class="rule">Pattern:</span> Masculine adjectives ending in <strong>ا</strong> (a) change to <strong>ی</strong> (i) for feminine.</p><p><span class="rule">Verb agreement:</span></p><ul><li>وہ جاتا ہے (woh jata hai) = He goes</li><li>وہ جاتی ہے (woh jati hai) = She goes</li><li>Present habitual: stem + تا (ta, m.) / تی (ti, f.) / تے (te, m. pl.)</li></ul><p><span class="rule">Invariable adjectives:</span> Some adjectives do NOT change: خوش (khush), بیمار (beemar), صاف (saaf). These stay the same for both genders.</p>',
+
+  23: '<h3>Everyday Sentences (روزمرہ کے فقرے)</h3><table><tr><th>Urdu</th><th>Transliteration</th><th>English</th></tr><tr><td dir="rtl">میں نہیں سمجھا</td><td>Main nahi samjha</td><td>I don\'t understand</td></tr><tr><td dir="rtl">آہستہ بولیے</td><td>Aahista boliye</td><td>Please speak slowly</td></tr><tr><td dir="rtl">یہ کتنے کا ہے؟</td><td>Yeh kitne ka hai?</td><td>How much is this?</td></tr><tr><td dir="rtl">مجھے نہیں معلوم</td><td>Mujhe nahi maloom</td><td>I don\'t know</td></tr><tr><td dir="rtl">ایک لمحہ رکیے</td><td>Ek lamha rukiye</td><td>Wait a moment</td></tr><tr><td dir="rtl">مجھے یہ پسند ہے</td><td>Mujhe yeh pasand hai</td><td>I like this</td></tr><tr><td dir="rtl">چلیں</td><td>Chalein</td><td>Let\'s go</td></tr></table><p><span class="rule">Survival tip:</span> Even just knowing "معاف کیجیے، مجھے اردو نہیں آتی" (Maaf kijiye, mujhe Urdu nahi aati = Sorry, I don\'t know Urdu) and "کیا آپ انگریزی بولتے ہیں؟" (Kya aap Angrezi bolte hain? = Do you speak English?) can be lifesavers.</p>',
+
+  24: '<h3>Vocabulary Quick Fire Tips</h3><p><span class="rule">Time words:</span> آج (aaj = today), کل (kal = tomorrow AND yesterday), ابھی (abhi = now), ہمیشہ (hamesha = always), کبھی نہیں (kabhi nahi = never)</p><p><span class="rule">Note on کل:</span> کل means BOTH "yesterday" and "tomorrow" in Urdu. Context tells you which: کل میں گیا تھا (kal main gaya tha = yesterday I went) vs کل میں جاؤں گا (kal main jaoon ga = tomorrow I will go).</p><p><span class="rule">Connectors:</span> اور (aur = and), لیکن/مگر (lekin/magar = but), یا (ya = or), بھی (bhi = also/too), کے ساتھ (ke saath = with), کے بغیر (ke baghair = without)</p><p><span class="rule">Common adjectives:</span> بڑا (bara = big), چھوٹا (chhota = small), اچھا (achha = good), برا (bura = bad), نیا (naya = new), پرانا (purana = old)</p>',
+
+  25: '<h3>All Concepts Combined - Summary</h3><p><span class="rule">Greetings:</span> السلام علیکم / وعلیکم السلام, صبح بخیر, شام بخیر, خدا حافظ</p><p><span class="rule">Introduction:</span> میرا نام ___ ہے, میں ___ سے ہوں, آپ کا نام کیا ہے؟</p><p><span class="rule">Polite:</span> شکریہ, براہ کرم, معاف کیجیے, کوئی بات نہیں</p><p><span class="rule">Verb "to be":</span> ہوں (I), ہے (he/she/it), ہو (you informal), ہیں (you formal/they/we)</p><p><span class="rule">Word order:</span> SOV: Subject + Object + Verb</p><p><span class="rule">Gender:</span> All nouns have gender. Adjectives ending in ا(m.) change to ی(f.).</p><p><span class="rule">Chahiye:</span> مجھے + noun + چاہیے = I need ___</p><p><span class="rule">Feelings:</span> میں + adj + ہوں (emotions). مجھے + noun + لگی/لگ رہی ہے (physical sensations).</p><p><span class="rule">Negation:</span> نہیں (nahi) before the verb.</p><p><span class="rule">Questions:</span> کیا (what/yes-no marker), کون (who), کہاں (where), کب (when), کیوں (why), کیسے (how)</p><p><span class="rule">Postpositions:</span> میں (in), پر (on), سے (from), کو (to), کا/کی/کے (of)</p><p><span class="rule">Formality:</span> تو (intimate) < تم (informal) < آپ (formal/respectful)</p>'
+};
+
+let score = 0;
+let total = 0;
+const totalInputs = countTotalInputs();
+
+function countTotalInputs() {
+  let c = 0;
+  for (const ex of EXERCISES) {
+    if (ex.type === 'mc') c += ex.questions.length;
+    else if (ex.type === 'dialogue') {
+      for (const line of ex.lines) for (const p of line.parts) if (typeof p === 'object' && p.blank) c++;
+    } else if (ex.type === 'freeform') { /* no auto-scoring */ }
+    else c += ex.rows.length;
+  }
+  return c;
+}
+
+function updateScore() {
+  document.getElementById('scoreDisplay').textContent = score + ' / ' + totalInputs;
+  const pct = totalInputs > 0 ? Math.round(score / totalInputs * 100) : 0;
+  document.getElementById('pctDisplay').textContent = '(' + pct + '%)';
+  if (typeof saveProgress === 'function') saveProgress(true);
+}
+
+function normalize(s) {
+  return s.trim().toLowerCase().replace(/\s+/g,' ').replace(/[?.!,]+$/,'').replace(/[?.!,]+/g,function(m){return m;});
+}
+
+function normalizeForCompare(s) {
+  return s.trim().toLowerCase().replace(/\s+/g,' ');
+}
+
+function checkAnswer(inputEl) {
+  if (inputEl.classList.contains('correct')) return;
+
+  const wasWrong = inputEl.classList.contains('wrong');
+  if (wasWrong) {
+    inputEl.classList.remove('wrong');
+    inputEl.readOnly = false;
+    inputEl.classList.remove('answered');
+    const revealEl = inputEl.parentElement.querySelector('.answer-reveal');
+    if (revealEl) { revealEl.classList.remove('show'); revealEl.textContent = ''; }
+    const hintEl = inputEl.parentElement.querySelector('.hint-text');
+    if (hintEl) { hintEl.classList.remove('show'); hintEl.textContent = ''; delete hintEl.dataset.level; }
+  }
+
+  const userVal = normalizeForCompare(inputEl.value);
+  if (!userVal) return;
+
+  const answers = inputEl.dataset.answer.split('/').map(a => normalizeForCompare(a));
+  const revealEl = inputEl.parentElement.querySelector('.answer-reveal');
+  let matched = false;
+
+  for (const ans of answers) {
+    if (userVal === ans) { matched = true; break; }
+    const userNoPunct = userVal.replace(/[?.!,؟۔،]/g,'').trim();
+    const ansNoPunct = ans.replace(/[?.!,؟۔،]/g,'').trim();
+    if (userNoPunct === ansNoPunct) { matched = true; break; }
+  }
+
+  if (matched) {
+    inputEl.readOnly = true;
+    inputEl.classList.add('answered','correct');
+    score++;
+    const cm = document.createElement('span');
+    cm.className = 'checkmark';
+    cm.textContent = ' \u2713';
+    inputEl.parentElement.appendChild(cm);
+  } else {
+    inputEl.classList.add('wrong');
+    if (revealEl) {
+      revealEl.textContent = '\u2192 ' + inputEl.dataset.answer.split('/')[0].trim();
+      revealEl.classList.add('show');
+    }
+  }
+  updateScore();
+  if (matched) focusNext(inputEl);
+}
+
+function focusNext(currentEl) {
+  const allInputs = Array.from(document.querySelectorAll('input[type="text"]'));
+  const idx = allInputs.indexOf(currentEl);
+  for (let i = idx + 1; i < allInputs.length; i++) {
+    if (!allInputs[i].classList.contains('correct')) { ensureVisibleAndFocus(allInputs[i]); return; }
+  }
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress? This cannot be undone.')) return;
+  score = 0; total = 0;
+  document.querySelectorAll('input[type="text"]').forEach(el => {
+    el.value = ''; el.readOnly = false;
+    el.classList.remove('answered','correct','wrong');
+    const cm = el.parentElement.querySelector('.checkmark');
+    if (cm) cm.remove();
+    const rev = el.parentElement.querySelector('.answer-reveal');
+    if (rev) { rev.classList.remove('show'); rev.textContent = ''; }
+    const hint = el.parentElement.querySelector('.hint-text');
+    if (hint) { hint.classList.remove('show'); hint.textContent = ''; delete hint.dataset.level; }
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(el => {
+    el.checked = false; el.disabled = false;
+  });
+  document.querySelectorAll('.mc-option').forEach(el => {
+    el.classList.remove('correct-choice','wrong-choice','reveal-correct','locked','answered');
+  });
+  document.querySelectorAll('.mc-group').forEach(el => el.classList.remove('answered'));
+  document.querySelectorAll('.model-answer').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+  localStorage.removeItem('urdu_exercises');
+  fetch('/api/progress', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'}).catch(()=>{});
+  updateScore();
+  const first = document.querySelector('input[type="text"]');
+  if (first) first.focus();
+}
+
+const STORAGE_KEY = 'urdu_exercises';
+
+function saveProgress(silent) {
+  const data = {score: score, inputs: [], radios: [], textareas: [], openExercises: []};
+
+  document.querySelectorAll('input[type="text"]').forEach((el, i) => {
+    data.inputs.push({
+      value: el.value,
+      correct: el.classList.contains('correct'),
+      wrong: el.classList.contains('wrong')
+    });
+  });
+
+  document.querySelectorAll('.mc-group').forEach((group, i) => {
+    const selected = group.querySelector('input[type="radio"]:checked');
+    data.radios.push({
+      answered: group.classList.contains('answered'),
+      selected: selected ? parseInt(selected.value) : null
+    });
+  });
+
+  document.querySelectorAll('textarea').forEach((el, i) => {
+    data.textareas.push(el.value);
+  });
+
+  document.querySelectorAll('.exercise-body').forEach(body => {
+    if (body.classList.contains('open')) data.openExercises.push(body.id);
+  });
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  fetch('/api/progress', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)}).catch(()=>{});
+
+  const status = document.getElementById('saveStatus');
+  if (!silent) {
+    status.textContent = 'Saved!';
+    status.classList.add('show');
+    setTimeout(() => status.classList.remove('show'), 2000);
+  }
+}
+
+function applyProgress(data) {
+  if (!data || !data.inputs) { updateScore(); return; }
+  score = 0;
+
+  const inputs = document.querySelectorAll('input[type="text"]');
+  inputs.forEach((el, i) => {
+    if (!data.inputs[i]) return;
+    const saved = data.inputs[i];
+    el.value = saved.value;
+    if (saved.correct) {
+      el.readOnly = true;
+      el.classList.add('answered','correct');
+      score++;
+      const cm = document.createElement('span');
+      cm.className = 'checkmark';
+      cm.textContent = ' \u2713';
+      el.parentElement.appendChild(cm);
+    } else if (saved.wrong) {
+      el.classList.add('wrong');
+      const revealEl = el.parentElement.querySelector('.answer-reveal');
+      if (revealEl) {
+        revealEl.textContent = '\u2192 ' + el.dataset.answer.split('/')[0].trim();
+        revealEl.classList.add('show');
+      }
+    }
+  });
+
+  const mcGroups = document.querySelectorAll('.mc-group');
+  mcGroups.forEach((group, i) => {
+    if (!data.radios[i] || !data.radios[i].answered) return;
+    const saved = data.radios[i];
+    group.classList.add('answered');
+    const correctIdx = parseInt(group.dataset.correct);
+    const options = group.querySelectorAll('.mc-option');
+    const radio = group.querySelector('input[value="' + saved.selected + '"]');
+    if (radio) radio.checked = true;
+    options.forEach(opt => {
+      opt.classList.add('locked');
+      opt.querySelector('input').disabled = true;
+    });
+    if (saved.selected === correctIdx) {
+      options[saved.selected].classList.add('correct-choice');
+      score++;
+    } else {
+      options[saved.selected].classList.add('wrong-choice');
+      options[correctIdx].classList.add('reveal-correct');
+    }
+  });
+
+  document.querySelectorAll('textarea').forEach((el, i) => {
+    if (data.textareas[i]) el.value = data.textareas[i];
+  });
+
+  if (data.openExercises) {
+    document.querySelectorAll('.exercise-body').forEach(body => {
+      const id = body.id.replace('body-','');
+      const arrow = document.getElementById('arrow-' + id);
+      if (data.openExercises.includes(body.id)) {
+        body.classList.add('open');
+        if (arrow) arrow.classList.add('open');
+      } else {
+        body.classList.remove('open');
+        if (arrow) arrow.classList.remove('open');
+      }
+    });
+  }
+
+  updateScore();
+}
+
+function loadProgress() {
+  fetch('/api/progress').then(r => r.json()).then(data => {
+    if (data && data.inputs) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      applyProgress(data);
+    } else {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) { updateScore(); return; }
+      try { applyProgress(JSON.parse(raw)); } catch(e) { updateScore(); }
+    }
+  }).catch(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) { updateScore(); return; }
+    try { applyProgress(JSON.parse(raw)); } catch(e) { updateScore(); }
+  });
+}
+
+function toggleExercise(id) {
+  const body = document.getElementById('body-' + id);
+  const arrow = document.getElementById('arrow-' + id);
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function buildTableExercise(ex) {
+  const answerColIdx = ex.cols.indexOf("Your Answer");
+  const solutionColIdx = ex.cols.indexOf("Solution");
+
+  let visibleCols = [];
+  for (let i = 0; i < ex.cols.length; i++) {
+    if (i === solutionColIdx) continue;
+    visibleCols.push({colIdx: i, name: ex.cols[i]});
+  }
+
+  let html = '<table><thead><tr>';
+  for (const vc of visibleCols) html += '<th>' + vc.name + '</th>';
+  html += '</tr></thead><tbody>';
+
+  for (const row of ex.rows) {
+    html += '<tr>';
+    const answer = row[row.length - 1];
+    let dataIdx = 0;
+    for (const vc of visibleCols) {
+      if (vc.colIdx === answerColIdx) {
+        html += '<td class="ex-cell"><input type="text" data-answer="' + escAttr(answer) + '" autocomplete="off" spellcheck="false"><div class="answer-reveal"></div></td>';
+      } else if (vc.colIdx === 0) {
+        html += '<td class="num">' + row[0] + '</td>';
+        dataIdx++;
+      } else {
+        html += '<td>' + escHtml(row[dataIdx]) + '</td>';
+        dataIdx++;
+      }
+    }
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+function buildDialogue(ex) {
+  let html = '<div class="dialogue">';
+  for (const line of ex.lines) {
+    html += '<p><span class="speaker">' + line.speaker + ':</span> ';
+    for (const part of line.parts) {
+      if (typeof part === 'string') {
+        html += escHtml(part);
+      } else if (part.blank) {
+        html += '<span class="ex-cell" style="display:inline"><input type="text" data-answer="' + escAttr(part.answer) + '" autocomplete="off" spellcheck="false" placeholder="___"><div class="answer-reveal"></div></span>';
+        if (part.hint) html += ' <span class="hint">(' + escHtml(part.hint) + ')</span>';
+      }
+    }
+    html += '</p>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function buildMC(ex) {
+  let html = '';
+  ex.questions.forEach((q, qi) => {
+    const name = 'mc_' + ex.id + '_' + qi;
+    html += '<div class="mc-group" data-correct="' + q.correct + '" data-name="' + name + '">';
+    html += '<div class="mc-q">' + (qi+1) + '. ' + escHtml(q.q) + '</div>';
+    q.options.forEach((opt, oi) => {
+      html += '<label class="mc-option" data-idx="' + oi + '"><input type="radio" name="' + name + '" value="' + oi + '"> ' + escHtml(opt) + '</label>';
+    });
+    html += '</div>';
+  });
+  return html;
+}
+
+function buildFreeform(ex) {
+  let html = '<textarea placeholder="Write your Urdu here..."></textarea>';
+  html += '<br><button class="model-btn" onclick="this.nextElementSibling.classList.toggle(\'show\')">Show Model Answer</button>';
+  html += '<div class="model-answer">' + escHtml(ex.modelAnswer).replace(/\n/g,'<br>') + '</div>';
+  return html;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s) { return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function showTheory(id) {
+  const overlay = document.getElementById('theoryOverlay');
+  const content = document.getElementById('theoryBody');
+  content.innerHTML = THEORY[id] || '<p>No theory available for this exercise.</p>';
+  overlay.classList.add('show');
+}
+
+function hideTheory() {
+  document.getElementById('theoryOverlay').classList.remove('show');
+}
+
+// Build all exercises
+const app = document.getElementById('app');
+for (const ex of EXERCISES) {
+  let bodyHtml = '';
+  if (ex.instruction) bodyHtml += '<p class="instruction">' + escHtml(ex.instruction) + '</p>';
+  if (ex.rule) bodyHtml += '<div class="rule-box">' + escHtml(ex.rule) + '</div>';
+
+  if (ex.type === 'dialogue') bodyHtml += buildDialogue(ex);
+  else if (ex.type === 'mc') bodyHtml += buildMC(ex);
+  else if (ex.type === 'freeform') bodyHtml += buildFreeform(ex);
+  else bodyHtml += buildTableExercise(ex);
+
+  const paddedId = String(ex.id).padStart(2,'0');
+  const slug = SLUGS[ex.id - 1] || 'practice';
+
+  app.innerHTML += `
+    <div class="exercise">
+      <div class="exercise-header" onclick="toggleExercise(${ex.id})">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+          <h2>Exercise ${ex.id} - ${escHtml(ex.title)}</h2>
+          <a href="practice/practice-${paddedId}-${slug}.html" class="practice-link" onclick="event.stopPropagation()" title="Extra Practice">\u2192</a>
+          <span class="practice-badge" id="badge-${ex.id}"></span>
+          <span class="info-icon" onclick="event.stopPropagation();showTheory(${ex.id})" title="Theory">i</span>
+        </div>
+        <span class="arrow" id="arrow-${ex.id}">\u25B6</span>
+      </div>
+      <div class="exercise-body" id="body-${ex.id}">
+        ${bodyHtml}
+      </div>
+    </div>`;
+}
+
+// Open first exercise by default
+toggleExercise(1);
+
+// Ensure an input's parent exercise is expanded, then focus it
+function ensureVisibleAndFocus(input) {
+  const body = input.closest('.exercise-body');
+  if (body && !body.classList.contains('open')) {
+    body.classList.add('open');
+    const id = body.id.replace('body-','');
+    const arrow = document.getElementById('arrow-' + id);
+    if (arrow) arrow.classList.add('open');
+  }
+  input.focus();
+  input.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    saveProgress();
+    return;
+  }
+
+  if (e.ctrlKey && e.key === 'i' && e.target.matches('input[type="text"]')) {
+    e.preventDefault();
+    if (e.target.classList.contains('correct')) return;
+    const answer = e.target.dataset.answer;
+    if (!answer) return;
+    const primary = answer.split('/')[0].trim();
+    let hintEl = e.target.parentElement.querySelector('.hint-text');
+    if (!hintEl) {
+      hintEl = document.createElement('div');
+      hintEl.className = 'hint-text';
+      e.target.parentElement.appendChild(hintEl);
+    }
+    if (hintEl.dataset.level === '1') {
+      hintEl.textContent = '\u2192 ' + primary;
+      hintEl.dataset.level = '2';
+    } else {
+      const hintLen = Math.min(3, Math.ceil(primary.length * 0.3));
+      hintEl.textContent = 'Hint: ' + primary.substring(0, hintLen) + '...';
+      hintEl.dataset.level = '1';
+    }
+    hintEl.classList.add('show');
+    return;
+  }
+
+  if (e.ctrlKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+    e.preventDefault();
+    window.scrollBy({top: e.key === 'ArrowDown' ? 400 : -400, behavior:'smooth'});
+    return;
+  }
+
+  if (e.key === 'Tab' && e.target.matches('input[type="text"]')) {
+    const allInputs = Array.from(document.querySelectorAll('input[type="text"]'));
+    const idx = allInputs.indexOf(e.target);
+    if (idx === -1) return;
+    const nextIdx = e.shiftKey ? idx - 1 : idx + 1;
+    if (nextIdx >= 0 && nextIdx < allInputs.length) {
+      e.preventDefault();
+      ensureVisibleAndFocus(allInputs[nextIdx]);
+    }
+    return;
+  }
+
+  if (!e.target.matches('input[type="text"]')) return;
+
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    checkAnswer(e.target);
+    return;
+  }
+
+  const allInputs = Array.from(document.querySelectorAll('input[type="text"]'));
+  const idx = allInputs.indexOf(e.target);
+  if (idx === -1) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (idx < allInputs.length - 1) ensureVisibleAndFocus(allInputs[idx + 1]);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (idx > 0) ensureVisibleAndFocus(allInputs[idx - 1]);
+  } else if (e.key === 'ArrowRight' && e.target.selectionStart === e.target.value.length) {
+    e.preventDefault();
+    if (idx < allInputs.length - 1) ensureVisibleAndFocus(allInputs[idx + 1]);
+  } else if (e.key === 'ArrowLeft' && e.target.selectionStart === 0) {
+    e.preventDefault();
+    if (idx > 0) ensureVisibleAndFocus(allInputs[idx - 1]);
+  }
+});
+
+// Event delegation for MC radio buttons
+document.addEventListener('change', function(e) {
+  if (e.target.matches('input[type="radio"]')) {
+    const group = e.target.closest('.mc-group');
+    if (!group || group.classList.contains('answered')) return;
+    group.classList.add('answered');
+
+    const correctIdx = parseInt(group.dataset.correct);
+    const selectedIdx = parseInt(e.target.value);
+    const options = group.querySelectorAll('.mc-option');
+
+    total++;
+    options.forEach(opt => {
+      opt.classList.add('locked');
+      opt.querySelector('input').disabled = true;
+    });
+
+    if (selectedIdx === correctIdx) {
+      options[selectedIdx].classList.add('correct-choice');
+      score++;
+    } else {
+      options[selectedIdx].classList.add('wrong-choice');
+      options[correctIdx].classList.add('reveal-correct');
+    }
+    updateScore();
+  }
+});
+
+function loadPracticeBadges() {
+  for (let i = 1; i <= 25; i++) {
+    const key = 'urdu_practice_' + String(i).padStart(2,'0');
+    const raw = localStorage.getItem(key);
+    if (!raw) continue;
+    try {
+      const data = JSON.parse(raw);
+      if (typeof data.total !== 'number' || data.total === 0) continue;
+      const badge = document.getElementById('badge-' + i);
+      if (!badge) continue;
+      const s = data.score || 0;
+      badge.textContent = s + '/' + data.total;
+      badge.classList.add('has-progress');
+      if (s === data.total) badge.classList.add('complete');
+    } catch(e) {}
+  }
+}
+
+// Load saved progress first
+loadProgress();
+loadPracticeBadges();
+setTimeout(() => {
+  const first = document.querySelector('input[type="text"]:not(.correct)');
+  if (first) ensureVisibleAndFocus(first);
+}, 100);
+</script>
+
+<div class="theory-overlay" id="theoryOverlay" onclick="if(event.target===this)hideTheory()">
+  <div class="theory-content">
+    <span class="close-theory" onclick="hideTheory()">&times;</span>
+    <div id="theoryBody"></div>
+  </div>
+</div>
+
+</body>
+</html>

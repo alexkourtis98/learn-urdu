@@ -1,0 +1,5 @@
+sessions/
+progress.json
+*.pdf
+__pycache__/
+.DS_Store

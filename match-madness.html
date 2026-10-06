@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Madness — اردو</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#fff;color:#3c3c3c;font-family:'DIN Round Pro','Nunito','Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;min-height:100vh;overflow-x:hidden}
+
+/* ---- BACK LINK ---- */
+a.back{color:#1CB0F6;text-decoration:none;font-weight:700;padding:16px 20px;display:inline-block;font-size:.95em}
+a.back:hover{text-decoration:underline}
+
+/* ---- SCREEN MANAGEMENT ---- */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ============ LEVEL SELECT ============ */
+#levelSelect{max-width:640px;margin:0 auto;padding:0 20px 40px}
+#levelSelect h1{text-align:center;font-size:1.6em;color:#3c3c3c;font-weight:800;padding:0 0 4px;letter-spacing:-.5px}
+.ls-subtitle{text-align:center;color:#afafaf;font-size:.9em;margin-bottom:20px;font-weight:600}
+.level-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.level-card{
+  background:#fff;
+  border:2px solid #e5e5e5;
+  border-bottom:4px solid #e5e5e5;
+  border-radius:16px;
+  padding:20px 16px;
+  cursor:pointer;
+  transition:all .15s;
+  text-align:center;
+  position:relative;
+}
+.level-card:hover{background:#f7f7f7;border-color:#ddd;border-bottom-color:#ddd}
+.level-card:active{transform:translateY(2px);border-bottom-width:2px;margin-top:2px}
+.level-card.completed{border-color:#58CC02;border-bottom-color:#46a302}
+.level-card.completed:hover{border-color:#58CC02;border-bottom-color:#46a302;background:#f0fce4}
+.level-card h3{color:#3c3c3c;font-size:1.05em;font-weight:800;margin-bottom:2px}
+.level-card .level-info{color:#afafaf;font-size:.8em;font-weight:600}
+.level-card .level-stars{font-size:1.5em;margin-top:8px;line-height:1}
+.level-card .level-best{color:#58CC02;font-size:.78em;font-weight:700;margin-top:4px}
+.level-card.locked{opacity:.45;cursor:not-allowed}
+.level-card.locked:hover{background:#fff;border-color:#e5e5e5;border-bottom-color:#e5e5e5;transform:none}
+.lock-icon{font-size:1.6em;margin-top:8px;color:#ccc}
+
+.star-gold{color:#FFC800}
+.star-empty{color:#e5e5e5}
+
+.reset-all-btn{display:block;margin:24px auto 0;background:none;border:2px solid #e5e5e5;color:#afafaf;padding:10px 24px;border-radius:12px;cursor:pointer;font-size:.85em;font-weight:700;transition:all .15s}
+.reset-all-btn:hover{border-color:#FF4B4B;color:#FF4B4B}
+
+/* ============ GET READY COUNTDOWN ============ */
+#getReady{position:fixed;top:0;left:0;width:100%;height:100%;background:#fff;z-index:100;flex-direction:column;align-items:center;justify-content:center}
+#getReady.active{display:flex}
+#getReady .countdown-number{font-size:120px;font-weight:800;color:#1CB0F6;animation:countPop .4s ease}
+#getReady .countdown-label{font-size:1.1em;color:#afafaf;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:8px}
+@keyframes countPop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+
+/* ============ GAMEPLAY ============ */
+#gameArea{max-width:640px;margin:0 auto;padding:0 16px 20px}
+
+/* Top bar: X | progress | timer */
+.top-bar{display:flex;align-items:center;gap:12px;padding:12px 0 8px}
+.top-bar .close-btn{
+  background:none;border:none;cursor:pointer;font-size:1.4em;color:#afafaf;
+  padding:4px;line-height:1;font-weight:700;transition:color .15s;
+}
+.top-bar .close-btn:hover{color:#FF4B4B}
+.progress-wrap{flex:1;height:16px;background:#e5e5e5;border-radius:10px;overflow:hidden;position:relative}
+.progress-fill{height:100%;background:linear-gradient(90deg,#58CC02,#69e30b);border-radius:10px;transition:width .3s;width:0;position:relative}
+.progress-fill.pulse{animation:progPulse .3s ease}
+@keyframes progPulse{0%{transform:scaleY(1)}50%{transform:scaleY(1.3)}100%{transform:scaleY(1)}}
+.top-bar .timer{font-size:1.1em;font-weight:800;color:#3c3c3c;min-width:40px;text-align:right}
+.top-bar .timer.warning{animation:timerPulse .5s infinite alternate}
+.top-bar .timer.danger{color:#FF4B4B;animation:timerPulse .5s infinite alternate}
+@keyframes timerPulse{from{transform:scale(1)}to{transform:scale(1.15)}}
+
+/* Round & streak info */
+.game-info-bar{display:flex;justify-content:space-between;align-items:center;padding:0 2px 10px}
+.round-label{color:#afafaf;font-size:.85em;font-weight:700}
+.streak-display{font-size:.9em;font-weight:800;color:#FF9600;min-height:22px}
+.streak-display.glowing{animation:streakGlow .8s infinite alternate,streakBounce .4s ease;color:#58CC02}
+@keyframes streakGlow{from{text-shadow:0 0 4px rgba(88,204,2,.3)}to{text-shadow:0 0 12px rgba(88,204,2,.6)}}
+@keyframes streakBounce{0%{transform:scale(1)}40%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* Match columns */
+#matchGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match-col{display:flex;flex-direction:column;gap:8px}
+.match-col-header{text-align:center;font-size:.75em;color:#afafaf;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:2px 0 4px}
+
+.match-tile{
+  background:#fff;
+  border:2px solid #e5e5e5;
+  border-bottom:4px solid #e5e5e5;
+  border-radius:12px;
+  padding:14px 10px;
+  cursor:pointer;
+  transition:all .1s;
+  text-align:center;
+  font-size:.95em;
+  font-weight:700;
+  user-select:none;
+  min-height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#3c3c3c;
+  position:relative;
+}
+.match-tile:hover{background:#f7f7f7}
+.match-tile:active{transform:translateY(2px);border-bottom-width:2px}
+
+.match-tile.selected{
+  border-color:#1CB0F6;
+  border-bottom-color:#1899d6;
+  background:#ddf4ff;
+  color:#1CB0F6;
+  animation:selectedPulse 1.2s ease-in-out infinite;
+}
+@keyframes selectedPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(28,176,246,.3)}
+  50%{box-shadow:0 0 0 6px rgba(28,176,246,.15)}
+}
+.match-tile.correct{
+  border-color:#58CC02;
+  border-bottom-color:#46a302;
+  background:#d7ffb8;
+  color:#58CC02;
+  pointer-events:none;
+  animation:correctBounce .45s cubic-bezier(.34,1.56,.64,1);
+}
+.match-tile.wrong{
+  border-color:#FF4B4B;
+  border-bottom-color:#e63e3e;
+  background:#ffdfe0;
+  color:#FF4B4B;
+  animation:wrongShake .5s ease;
+}
+.match-tile.matched{
+  pointer-events:none;
+  animation:matchedFade .4s ease forwards;
+}
+@keyframes matchedFade{
+  0%{opacity:1;transform:scale(1)}
+  50%{opacity:.5;transform:scale(.9)}
+  100%{opacity:0;transform:scale(.7)}
+}
+
+@keyframes correctBounce{
+  0%{transform:scale(1);background:#d7ffb8}
+  30%{transform:scale(1.12);background:#c0ff8e}
+  60%{transform:scale(.97)}
+  100%{transform:scale(1);background:#d7ffb8}
+}
+@keyframes wrongShake{
+  0%,100%{transform:translateX(0) rotate(0);background:#ffdfe0}
+  10%{background:#ffb8ba}
+  20%{transform:translateX(-6px) rotate(-3deg)}
+  40%{transform:translateX(6px) rotate(3deg)}
+  60%{transform:translateX(-4px) rotate(-1.5deg)}
+  80%{transform:translateX(4px) rotate(1.5deg)}
+}
+
+/* Floating XP popup */
+.xp-float{
+  position:fixed;
+  font-size:.85em;
+  font-weight:800;
+  color:#FF9600;
+  pointer-events:none;
+  z-index:200;
+  animation:xpFloat .7s ease forwards;
+}
+@keyframes xpFloat{
+  0%{opacity:1;transform:translateY(0) scale(1)}
+  60%{opacity:1;transform:translateY(-30px) scale(1.1)}
+  100%{opacity:0;transform:translateY(-50px) scale(.9)}
+}
+
+/* ============ ROUND COMPLETE ============ */
+#roundComplete{max-width:420px;margin:60px auto;text-align:center;padding:20px}
+#roundComplete h2{font-size:1.5em;color:#3c3c3c;font-weight:800;margin-bottom:16px}
+.rc-xp{font-size:2em;font-weight:800;color:#FF9600;margin:12px 0}
+.rc-stat{color:#afafaf;font-size:.95em;font-weight:600;margin:4px 0}
+.rc-stat span{color:#3c3c3c;font-weight:800}
+.rc-review-note{color:#1CB0F6;font-size:.85em;font-weight:700;margin-top:12px}
+
+.rc-xp,.rc-stat,.rc-review-note{animation:slideUp .4s ease both}
+.rc-xp{animation-delay:.1s}
+.rc-stat:nth-child(3){animation-delay:.2s}
+.rc-stat:nth-child(4){animation-delay:.3s}
+.rc-stat:nth-child(5){animation-delay:.4s}
+.rc-review-note{animation-delay:.5s}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============ LEVEL COMPLETE ============ */
+#levelComplete{max-width:420px;margin:40px auto;text-align:center;padding:20px}
+#levelComplete h2{font-size:1.7em;color:#3c3c3c;font-weight:800}
+.lc-stars{font-size:3em;margin:20px 0;line-height:1}
+.lc-stars .star{display:inline-block;opacity:0;transform:scale(0) rotate(-30deg);transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.lc-stars .star.reveal{opacity:1;transform:scale(1) rotate(0)}
+.lc-xp{font-size:1.8em;font-weight:800;color:#FF9600;margin:8px 0}
+.lc-stat{color:#afafaf;font-size:.95em;font-weight:600;margin:4px 0}
+.lc-stat span{color:#3c3c3c;font-weight:800}
+.lc-xp,.lc-stat{animation:slideUp .4s ease both}
+.lc-xp{animation-delay:.6s}
+.lc-stat:nth-of-type(1){animation-delay:.8s}
+.lc-stat:nth-of-type(2){animation-delay:.9s}
+
+/* ============ STATS BAR ============ */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px;padding:16px;background:#f7f7f7;border-radius:14px;border:2px solid #e5e5e5}
+.stat-box{text-align:center}
+.stat-box .stat-value{font-size:1.2em;font-weight:800;color:#3c3c3c}
+.stat-box .stat-label{font-size:.72em;font-weight:700;color:#afafaf;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-block;
+  background:#58CC02;
+  color:#fff;
+  border:none;
+  border-bottom:4px solid #46a302;
+  padding:13px 32px;
+  border-radius:14px;
+  cursor:pointer;
+  font-size:1em;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  transition:all .1s;
+  margin:8px;
+}
+.btn:hover{background:#61d800}
+.btn:active{transform:translateY(2px);border-bottom-width:1px}
+.btn.secondary{
+  background:#fff;
+  color:#afafaf;
+  border:2px solid #e5e5e5;
+  border-bottom:4px solid #e5e5e5;
+}
+.btn.secondary:hover{background:#f7f7f7;color:#777}
+.btn-wrap{margin-top:24px}
+
+/* ============ CONFETTI ============ */
+#confettiCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:300}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:500px){
+  .match-tile{padding:11px 8px;font-size:.88em;min-height:44px}
+  .top-bar .timer{font-size:1em}
+  #levelSelect h1{font-size:1.3em}
+  .level-grid{gap:10px}
+  .level-card{padding:16px 12px}
+  #getReady .countdown-number{font-size:80px}
+  .lc-stars{font-size:2.4em}
+}
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back">&larr; Back</a>
+
+<!-- SCREEN 1: Level Select -->
+<div id="levelSelect" class="screen active">
+  <h1>Match Madness — اردو</h1>
+  <p class="ls-subtitle">Tap matching pairs before time runs out!</p>
+  <div class="level-grid" id="levelGrid"></div>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-box"><div class="stat-value" id="statXP">0</div><div class="stat-label">Total XP</div></div>
+    <div class="stat-box"><div class="stat-value" id="statGames">0</div><div class="stat-label">Games</div></div>
+    <div class="stat-box"><div class="stat-value" id="statStreak">0</div><div class="stat-label">Best Streak</div></div>
+    <div class="stat-box"><div class="stat-value" id="statWords">0</div><div class="stat-label">Words</div></div>
+  </div>
+  <button class="reset-all-btn" onclick="resetAllProgress()">Reset All Progress</button>
+</div>
+
+<!-- SCREEN 2: Get Ready Countdown -->
+<div id="getReady" class="screen">
+  <div class="countdown-number" id="countdownNum">3</div>
+  <div class="countdown-label">Get Ready</div>
+</div>
+
+<!-- SCREEN 3: Gameplay -->
+<div id="gameArea" class="screen">
+  <div class="top-bar">
+    <button class="close-btn" onclick="confirmQuit()" title="Quit">&times;</button>
+    <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="timer" id="timer">60</div>
+  </div>
+  <div class="game-info-bar">
+    <div class="round-label" id="roundInfo">Round 1 / 4</div>
+    <div class="streak-display" id="streakDisplay"></div>
+  </div>
+  <div id="matchGrid">
+    <div class="match-col">
+      <div class="match-col-header">English</div>
+      <div id="colLeft"></div>
+    </div>
+    <div class="match-col">
+      <div class="match-col-header">اردو (Urdu)</div>
+      <div id="colRight"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: Round Complete -->
+<div id="roundComplete" class="screen">
+  <h2 id="rcTitle">Round Complete!</h2>
+  <div class="rc-xp" id="rcXP">+80 XP</div>
+  <div class="rc-stat">Pairs matched: <span id="rcMatched">8</span> / <span id="rcTotal">8</span></div>
+  <div class="rc-stat">Time: <span id="rcTime">0</span>s</div>
+  <div class="rc-stat">Best streak: <span id="rcStreak">0</span></div>
+  <div class="rc-review-note" id="rcReview"></div>
+  <div class="btn-wrap">
+    <button class="btn" id="btnContinue" onclick="nextRound()">CONTINUE</button>
+    <br>
+    <button class="btn secondary" onclick="backToLevels()">QUIT</button>
+  </div>
+</div>
+
+<!-- SCREEN 5: Level Complete -->
+<div id="levelComplete" class="screen">
+  <h2>Level Complete!</h2>
+  <div class="lc-stars" id="lcStars"></div>
+  <div class="lc-xp" id="lcXP">+320 XP</div>
+  <div class="lc-stat">Words mastered: <span id="lcMastered">0</span></div>
+  <div class="lc-stat">Words to review: <span id="lcReview">0</span></div>
+  <div class="btn-wrap">
+    <button class="btn" onclick="backToLevels()">CONTINUE</button>
+  </div>
+</div>
+
+<!-- Confetti canvas -->
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+// ============ SOUND SYSTEM (Web Audio API) ============
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playTone(freq, duration, type, gain) {
+  const ctx = getAudioCtx();
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+  osc.type = type || 'sine';
+  osc.frequency.value = freq;
+  g.gain.value = gain || 0.15;
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+  osc.connect(g);
+  g.connect(ctx.destination);
+  osc.start(ctx.currentTime);
+  osc.stop(ctx.currentTime + duration);
+}
+function playCorrect() {
+  playTone(523, 0.12, 'sine', 0.12);
+  setTimeout(() => playTone(659, 0.15, 'sine', 0.12), 80);
+}
+function playWrong() {
+  playTone(150, 0.2, 'sawtooth', 0.08);
+}
+function playStreak() {
+  playTone(523, 0.1, 'sine', 0.1);
+  setTimeout(() => playTone(659, 0.1, 'sine', 0.1), 70);
+  setTimeout(() => playTone(784, 0.18, 'sine', 0.12), 140);
+}
+function playTick() {
+  playTone(800, 0.05, 'sine', 0.08);
+}
+function playRoundWin() {
+  const notes = [523, 587, 659, 784];
+  notes.forEach((f, i) => setTimeout(() => playTone(f, 0.15, 'sine', 0.1), i * 100));
+}
+function playLevelWin() {
+  const notes = [523, 587, 659, 784, 880, 1047];
+  notes.forEach((f, i) => setTimeout(() => playTone(f, 0.2, 'sine', 0.1), i * 130));
+}
+function playTimeWarn() {
+  playTone(600, 0.04, 'triangle', 0.06);
+}
+
+// ============ VOCABULARY BANKS ============
+const VOCAB_BANKS = [
+  {
+    name: "Greetings & Responses",
+    desc: "Essential greetings, polite phrases, yes/no",
+    words: [
+      ["hello","\u06C1\u06CC\u0644\u0648 (hello)"],
+      ["peace be upon you","\u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u06CC\u06A9\u0645 (assalam alaikum)"],
+      ["good morning","\u0635\u0628\u062D \u0628\u062E\u06CC\u0631 (subah bakhair)"],
+      ["good evening","\u0634\u0627\u0645 \u0628\u062E\u06CC\u0631 (shaam bakhair)"],
+      ["good night","\u0634\u0628 \u0628\u062E\u06CC\u0631 (shab bakhair)"],
+      ["goodbye","\u062E\u062F\u0627 \u062D\u0627\u0641\u0638 (khuda hafiz)"],
+      ["thank you","\u0634\u06A9\u0631\u06CC\u06C1 (shukriya)"],
+      ["you're welcome","\u06A9\u0648\u0626\u06CC \u0628\u0627\u062A \u0646\u06C1\u06CC\u06BA (koi baat nahin)"],
+      ["please","\u0628\u0631\u0627\u06C1 \u06A9\u0631\u0645 (barah-e-karam)"],
+      ["sorry","\u0645\u0639\u0627\u0641 \u06A9\u06CC\u062C\u06CC\u06D2 (maaf kijiye)"],
+      ["yes","\u06C1\u0627\u06BA (haan)"],
+      ["no","\u0646\u06C1\u06CC\u06BA (nahin)"],
+      ["nice to meet you","\u0622\u067E \u0633\u06D2 \u0645\u0644 \u06A9\u0631 \u062E\u0648\u0634\u06CC \u06C1\u0648\u0626\u06CC (aap se mil kar khushi hui)"],
+      ["how are you?","\u0622\u067E \u06A9\u06CC\u0633\u06D2 \u06C1\u06CC\u06BA\u061F (aap kaise hain?)"],
+      ["I am fine","\u0645\u06CC\u06BA \u0679\u06BE\u06CC\u06A9 \u06C1\u0648\u06BA (main theek hoon)"],
+      ["praise God","\u0627\u0644\u062D\u0645\u062F\u0644\u0644\u06C1 (alhamdulillah)"]
+    ]
+  },
+  {
+    name: "Numbers & Colors",
+    desc: "Numbers 1-10 and basic colors",
+    words: [
+      ["one","\u0627\u06CC\u06A9 (ek)"],
+      ["two","\u062F\u0648 (do)"],
+      ["three","\u062A\u06CC\u0646 (teen)"],
+      ["four","\u0686\u0627\u0631 (char)"],
+      ["five","\u067E\u0627\u0646\u0686 (panch)"],
+      ["six","\u0686\u06BE (chhe)"],
+      ["seven","\u0633\u0627\u062A (saat)"],
+      ["eight","\u0622\u0679\u06BE (aath)"],
+      ["nine","\u0646\u0648 (nau)"],
+      ["ten","\u062F\u0633 (das)"],
+      ["red","\u0644\u0627\u0644 (laal)"],
+      ["blue","\u0646\u06CC\u0644\u0627 (neela)"],
+      ["green","\u0633\u0628\u0632 (sabz)"],
+      ["yellow","\u067E\u06CC\u0644\u0627 (peela)"],
+      ["black","\u06A9\u0627\u0644\u0627 (kala)"],
+      ["white","\u0633\u0641\u06CC\u062F (safed)"]
+    ]
+  },
+  {
+    name: "Family & People",
+    desc: "Family members, relatives, social roles",
+    words: [
+      ["mother","\u0645\u0627\u06BA (maan)"],
+      ["father","\u0628\u0627\u067E (baap)"],
+      ["brother","\u0628\u06BE\u0627\u0626\u06CC (bhai)"],
+      ["sister","\u0628\u06C1\u0646 (behen)"],
+      ["son","\u0628\u06CC\u0679\u0627 (beta)"],
+      ["daughter","\u0628\u06CC\u0679\u06CC (beti)"],
+      ["paternal grandfather","\u062F\u0627\u062F\u0627 (dada)"],
+      ["paternal grandmother","\u062F\u0627\u062F\u06CC (dadi)"],
+      ["maternal grandfather","\u0646\u0627\u0646\u0627 (nana)"],
+      ["maternal grandmother","\u0646\u0627\u0646\u06CC (nani)"],
+      ["husband","\u0634\u0648\u06C1\u0631 (shohar)"],
+      ["wife","\u0628\u06CC\u0648\u06CC (biwi)"],
+      ["friend","\u062F\u0648\u0633\u062A (dost)"],
+      ["teacher","\u0627\u0633\u062A\u0627\u062F (ustaad)"],
+      ["father (formal)","\u0648\u0627\u0644\u062F (walid)"],
+      ["mother (formal)","\u0648\u0627\u0644\u062F\u06C1 (walida)"]
+    ]
+  },
+  {
+    name: "Food & Drinks",
+    desc: "Common foods, beverages, kitchen staples",
+    words: [
+      ["water","\u067E\u0627\u0646\u06CC (pani)"],
+      ["food","\u06A9\u06BE\u0627\u0646\u0627 (khana)"],
+      ["tea","\u0686\u0627\u0626\u06D2 (chai)"],
+      ["coffee","\u06A9\u0627\u0641\u06CC (coffee)"],
+      ["milk","\u062F\u0648\u062F\u06BE (doodh)"],
+      ["rice","\u0686\u0627\u0648\u0644 (chawal)"],
+      ["bread","\u0631\u0648\u0679\u06CC (roti)"],
+      ["apple","\u0633\u06CC\u0628 (seb)"],
+      ["banana","\u06A9\u06CC\u0644\u0627 (kela)"],
+      ["egg","\u0627\u0646\u0688\u0627 (anda)"],
+      ["sugar","\u0686\u06CC\u0646\u06CC (cheeni)"],
+      ["salt","\u0646\u0645\u06A9 (namak)"],
+      ["meat","\u06AF\u0648\u0634\u062A (gosht)"],
+      ["vegetables","\u0633\u0628\u0632\u06CC (sabzi)"],
+      ["fruit","\u067E\u06BE\u0644 (phal)"],
+      ["butter","\u0645\u06A9\u06BE\u0646 (makhan)"]
+    ]
+  },
+  {
+    name: "Body Parts & Objects",
+    desc: "Body parts and everyday objects",
+    words: [
+      ["head","\u0633\u0631 (sar)"],
+      ["eye","\u0622\u0646\u06A9\u06BE (aankh)"],
+      ["nose","\u0646\u0627\u06A9 (naak)"],
+      ["mouth","\u0645\u0646\u06C1 (munh)"],
+      ["hand","\u06C1\u0627\u062A\u06BE (haath)"],
+      ["book","\u06A9\u062A\u0627\u0628 (kitab)"],
+      ["pen","\u0642\u0644\u0645 (qalam)"],
+      ["phone","\u0641\u0648\u0646 (phone)"],
+      ["chair","\u06A9\u0631\u0633\u06CC (kursi)"],
+      ["table","\u0645\u06CC\u0632 (mez)"],
+      ["house","\u06AF\u06BE\u0631 (ghar)"],
+      ["school","\u0627\u0633\u06A9\u0648\u0644 (school)"],
+      ["ear","\u06A9\u0627\u0646 (kaan)"],
+      ["foot","\u067E\u0627\u0624\u06BA (paon)"],
+      ["teeth","\u062F\u0627\u0646\u062A (daant)"],
+      ["hair","\u0628\u0627\u0644 (baal)"]
+    ]
+  },
+  {
+    name: "Days & Time",
+    desc: "Days of the week, time words, basic adverbs",
+    words: [
+      ["Monday","\u067E\u06CC\u0631 (peer)"],
+      ["Tuesday","\u0645\u0646\u06AF\u0644 (mangal)"],
+      ["Wednesday","\u0628\u062F\u06BE (budh)"],
+      ["Thursday","\u062C\u0645\u0639\u0631\u0627\u062A (jumeraat)"],
+      ["Friday","\u062C\u0645\u0639\u06C1 (jumma)"],
+      ["Saturday","\u06C1\u0641\u062A\u06C1 (hafta)"],
+      ["Sunday","\u0627\u062A\u0648\u0627\u0631 (itwaar)"],
+      ["today","\u0622\u062C (aaj)"],
+      ["tomorrow","\u06A9\u0644 (kal)"],
+      ["yesterday","\u06A9\u0644 (kal - same word)"],
+      ["morning","\u0635\u0628\u062D (subah)"],
+      ["evening","\u0634\u0627\u0645 (shaam)"],
+      ["night","\u0631\u0627\u062A (raat)"],
+      ["now","\u0627\u0628\u06BE\u06CC (abhi)"]
+    ]
+  },
+  {
+    name: "Verbs & Commands",
+    desc: "Common verb infinitives and imperative phrases",
+    words: [
+      ["to eat","\u06A9\u06BE\u0627\u0646\u0627 (khana)"],
+      ["to drink","\u067E\u06CC\u0646\u0627 (peena)"],
+      ["to sleep","\u0633\u0648\u0646\u0627 (sona)"],
+      ["to go","\u062C\u0627\u0646\u0627 (jana)"],
+      ["to come","\u0622\u0646\u0627 (aana)"],
+      ["to sit","\u0628\u06CC\u0679\u06BE\u0646\u0627 (baithna)"],
+      ["to stand","\u06A9\u06BE\u0691\u0627 \u06C1\u0648\u0646\u0627 (khara hona)"],
+      ["eat food!","\u06A9\u06BE\u0627\u0646\u0627 \u06A9\u06BE\u0627\u0624 (khana khao)"],
+      ["drink water!","\u067E\u0627\u0646\u06CC \u067E\u06CC\u0648 (pani piyo)"],
+      ["come here!","\u06CC\u06C1\u0627\u06BA \u0622\u0624 (yahan aao)"],
+      ["sit here!","\u06CC\u06C1\u0627\u06BA \u0628\u06CC\u0679\u06BE\u0648 (yahan baitho)"],
+      ["to read","\u067E\u0691\u06BE\u0646\u0627 (parhna)"],
+      ["to write","\u0644\u06A9\u06BE\u0646\u0627 (likhna)"],
+      ["to speak","\u0628\u0648\u0644\u0646\u0627 (bolna)"]
+    ]
+  },
+  {
+    name: "Everyday Phrases",
+    desc: "Useful complete sentences for daily life",
+    words: [
+      ["I want water","\u0645\u062C\u06BE\u06D2 \u067E\u0627\u0646\u06CC \u0686\u0627\u06C1\u06CC\u06D2 (mujhe pani chahiye)"],
+      ["I am hungry","\u0645\u062C\u06BE\u06D2 \u0628\u06BE\u0648\u06A9 \u0644\u06AF\u06CC \u06C1\u06D2 (mujhe bhook lagi hai)"],
+      ["I am thirsty","\u0645\u062C\u06BE\u06D2 \u067E\u06CC\u0627\u0633 \u0644\u06AF\u06CC \u06C1\u06D2 (mujhe pyaas lagi hai)"],
+      ["what is this?","\u06CC\u06C1 \u06A9\u06CC\u0627 \u06C1\u06D2\u061F (yeh kya hai?)"],
+      ["what is your name?","\u0622\u067E \u06A9\u0627 \u0646\u0627\u0645 \u06A9\u06CC\u0627 \u06C1\u06D2\u061F (aap ka naam kya hai?)"],
+      ["my name is...","\u0645\u06CC\u0631\u0627 \u0646\u0627\u0645 ... \u06C1\u06D2 (mera naam ... hai)"],
+      ["I am from Greece","\u0645\u06CC\u06BA \u06CC\u0648\u0646\u0627\u0646 \u0633\u06D2 \u06C1\u0648\u06BA (main yunaan se hoon)"],
+      ["I love Pakistan","\u0645\u062C\u06BE\u06D2 \u067E\u0627\u06A9\u0633\u062A\u0627\u0646 \u067E\u0633\u0646\u062F \u06C1\u06D2 (mujhe Pakistan pasand hai)"],
+      ["I am learning Urdu","\u0645\u06CC\u06BA \u0627\u0631\u062F\u0648 \u0633\u06CC\u06A9\u06BE \u0631\u06C1\u0627 \u06C1\u0648\u06BA (main Urdu seekh raha hoon)"],
+      ["I need help","\u0645\u062C\u06BE\u06D2 \u0645\u062F\u062F \u0686\u0627\u06C1\u06CC\u06D2 (mujhe madad chahiye)"],
+      ["where is the washroom?","\u0648\u0627\u0634 \u0631\u0648\u0645 \u06A9\u06C1\u0627\u06BA \u06C1\u06D2\u061F (wash room kahan hai?)"],
+      ["please speak slowly","\u0622\u06C1\u0633\u062A\u06C1 \u0628\u0648\u0644\u06CC\u06BA (aahista bolein)"]
+    ]
+  }
+];
+
+const PAIRS_PER_ROUND = 8;
+const ROUNDS_PER_LEVEL = 4;
+const TIME_PER_ROUND = 60;
+const STORAGE_KEY = 'urdu_match_madness_v2';
+const OLD_STORAGE_KEY = 'urdu_match_madness';
+
+// ============ STATE ============
+let currentLevel = 0;
+let currentRound = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let roundStartTime = 0;
+
+// Per-round state
+let roundPairs = [];
+let selectedTile = null;
+let matchedCount = 0;
+let totalPairs = 0;
+let streak = 0;
+let bestStreak = 0;
+let roundXP = 0;
+
+// Per-level session state (spaced repetition)
+let levelXP = 0;
+let levelMatchedTotal = 0;
+let levelPairsTotal = 0;
+let levelBestStreak = 0;
+let unseenQueue = [];
+let reviewQueue = [];
+let masteredSet = [];
+let wrongThisLevel = [];
+
+// ============ PROGRESS / localStorage + server ============
+const DEFAULT_STATS = {totalXP:0,totalGames:0,totalMatches:0,totalWrong:0,bestStreak:0,totalTimePlayed:0,wordsLearned:0};
+
+function getProgress() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    if (!d.levels) d.levels = {};
+    if (!d.stats) d.stats = {...DEFAULT_STATS};
+    return d;
+  } catch(e) { return { levels: {}, stats: {...DEFAULT_STATS} }; }
+}
+
+function saveProgress(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  fetch('/api/match-progress', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
+
+function saveLevelResult(level, stars, xp) {
+  const prog = getProgress();
+  if (!prog.levels) prog.levels = {};
+  const prev = prog.levels[level];
+  if (!prev || prev.stars < stars) {
+    prog.levels[level] = { stars, xp, mastered: [...new Set(masteredSet)], wrong: [...new Set(wrongThisLevel)] };
+  }
+
+  const s = prog.stats;
+  s.totalGames++;
+  s.totalXP += levelXP;
+  if (levelBestStreak > s.bestStreak) s.bestStreak = levelBestStreak;
+
+  const allMastered = new Set();
+  for (const key of Object.keys(prog.levels)) {
+    const lv = prog.levels[key];
+    if (lv.mastered) lv.mastered.forEach(w => allMastered.add(Array.isArray(w) ? w[0]+'|'+w[1] : w));
+  }
+  s.wordsLearned = allMastered.size;
+
+  saveProgress(prog);
+}
+
+function updateRoundStats(matched, wrong, elapsed) {
+  const prog = getProgress();
+  const s = prog.stats;
+  s.totalMatches += matched;
+  s.totalWrong += wrong;
+  s.totalTimePlayed += elapsed;
+  saveProgress(prog);
+}
+
+async function loadProgressFromServer() {
+  try {
+    const res = await fetch('/api/match-progress');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.levels && Object.keys(data.levels).length > 0) {
+      if (!data.stats) data.stats = {...DEFAULT_STATS};
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  } catch(e) {}
+}
+
+function migrateOldProgress() {
+  try {
+    const old = JSON.parse(localStorage.getItem(OLD_STORAGE_KEY));
+    if (!old) return;
+    const existing = getProgress();
+    if (Object.keys(existing.levels).length > 0) return;
+    const prog = { levels: {}, stats: {...DEFAULT_STATS} };
+    for (const key of Object.keys(old)) {
+      prog.levels[key] = { stars: old[key].stars, xp: old[key].score || 0, mastered: [], wrong: [] };
+    }
+    saveProgress(prog);
+  } catch(e) {}
+}
+
+function resetAllProgress() {
+  if (!confirm('Reset all Match Madness progress?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(OLD_STORAGE_KEY);
+  fetch('/api/match-progress', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({})
+  }).catch(() => {});
+  renderLevels();
+}
+
+function renderStats() {
+  const prog = getProgress();
+  const s = prog.stats || DEFAULT_STATS;
+  document.getElementById('statXP').textContent = s.totalXP;
+  document.getElementById('statGames').textContent = s.totalGames;
+  document.getElementById('statStreak').textContent = s.bestStreak;
+  document.getElementById('statWords').textContent = s.wordsLearned;
+}
+
+// ============ SCREEN MANAGEMENT ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ============ LEVEL SELECT ============
+function renderLevels() {
+  showScreen('levelSelect');
+  const grid = document.getElementById('levelGrid');
+  const prog = getProgress();
+  grid.innerHTML = '';
+  VOCAB_BANKS.forEach((bank, i) => {
+    const data = prog.levels[i];
+    const unlocked = i === 0 || prog.levels[i - 1];
+    const card = document.createElement('div');
+    card.className = 'level-card' + (data && data.stars >= 3 ? ' completed' : '') + (!unlocked ? ' locked' : '');
+
+    let starsHTML;
+    if (!unlocked) {
+      starsHTML = '<div class="lock-icon">&#x1F512;</div>';
+    } else if (data && data.stars > 0) {
+      starsHTML = '<div class="level-stars">'
+        + '<span class="star-gold">&#9733;</span>'.repeat(data.stars)
+        + '<span class="star-empty">&#9733;</span>'.repeat(3 - data.stars)
+        + '</div>';
+    } else {
+      starsHTML = '<div class="level-stars">'
+        + '<span class="star-empty">&#9733;</span>'.repeat(3)
+        + '</div>';
+    }
+
+    card.innerHTML = `
+      <h3>Level ${i + 1}</h3>
+      <div class="level-info">${bank.name}</div>
+      <div class="level-info">${bank.desc}</div>
+      ${starsHTML}
+      ${data ? '<div class="level-best">' + data.xp + ' XP</div>' : ''}
+    `;
+    if (unlocked) card.onclick = () => startLevel(i);
+    grid.appendChild(card);
+  });
+  renderStats();
+}
+
+// ============ GET READY COUNTDOWN ============
+function showCountdown(callback) {
+  showScreen('getReady');
+  const numEl = document.getElementById('countdownNum');
+  let count = 3;
+  numEl.textContent = count;
+  numEl.style.animation = 'none';
+  void numEl.offsetWidth;
+  numEl.style.animation = 'countPop .4s ease';
+  playTick();
+
+  const iv = setInterval(() => {
+    count--;
+    if (count <= 0) {
+      clearInterval(iv);
+      callback();
+      return;
+    }
+    numEl.textContent = count;
+    numEl.style.animation = 'none';
+    void numEl.offsetWidth;
+    numEl.style.animation = 'countPop .4s ease';
+    playTick();
+  }, 600);
+}
+
+// ============ START LEVEL ============
+function startLevel(level) {
+  currentLevel = level;
+  currentRound = 0;
+  levelXP = 0;
+  levelMatchedTotal = 0;
+  levelPairsTotal = 0;
+  levelBestStreak = 0;
+  masteredSet = [];
+  wrongThisLevel = [];
+
+  const bank = VOCAB_BANKS[level].words;
+  unseenQueue = shuffle([...bank]);
+  reviewQueue = [];
+
+  showCountdown(() => {
+    showScreen('gameArea');
+    startRound();
+  });
+}
+
+// ============ SPACED REPETITION PAIR SELECTION ============
+function selectRoundPairs() {
+  const pairs = [];
+  const reviewCount = Math.min(Math.floor(PAIRS_PER_ROUND * 0.25), reviewQueue.length);
+  const newCount = PAIRS_PER_ROUND - reviewCount;
+
+  for (let i = 0; i < reviewCount; i++) {
+    pairs.push(reviewQueue.shift());
+  }
+
+  let added = 0;
+  while (added < newCount && unseenQueue.length > 0) {
+    pairs.push(unseenQueue.shift());
+    added++;
+  }
+
+  if (pairs.length < PAIRS_PER_ROUND) {
+    const recyclePool = shuffle(masteredSet.filter(m =>
+      !pairs.some(p => p[0] === m[0] && p[1] === m[1])
+    ));
+    while (pairs.length < PAIRS_PER_ROUND && recyclePool.length > 0) {
+      pairs.push(recyclePool.shift());
+    }
+  }
+
+  while (pairs.length < PAIRS_PER_ROUND && reviewQueue.length > 0) {
+    pairs.push(reviewQueue.shift());
+  }
+
+  return shuffle(pairs);
+}
+
+// ============ START ROUND ============
+function startRound() {
+  roundPairs = selectRoundPairs();
+  totalPairs = roundPairs.length;
+  matchedCount = 0;
+  streak = 0;
+  bestStreak = 0;
+  roundXP = 0;
+  selectedTile = null;
+  timeLeft = TIME_PER_ROUND;
+
+  document.getElementById('roundInfo').textContent = `Round ${currentRound + 1} / ${ROUNDS_PER_LEVEL}`;
+  document.getElementById('streakDisplay').textContent = '';
+  document.getElementById('streakDisplay').classList.remove('glowing');
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressFill').classList.remove('pulse');
+  document.getElementById('timer').textContent = timeLeft;
+  document.getElementById('timer').className = 'timer';
+
+  const leftItems = roundPairs.map((p, i) => ({ text: p[0], idx: i, side: 'left' }));
+  const rightItems = roundPairs.map((p, i) => ({ text: p[1], idx: i, side: 'right' }));
+  shuffle(leftItems);
+  shuffle(rightItems);
+
+  const colLeft = document.getElementById('colLeft');
+  const colRight = document.getElementById('colRight');
+  colLeft.innerHTML = '';
+  colRight.innerHTML = '';
+
+  leftItems.forEach(item => {
+    const tile = createTile(item);
+    colLeft.appendChild(tile);
+  });
+  rightItems.forEach(item => {
+    const tile = createTile(item);
+    colRight.appendChild(tile);
+  });
+
+  roundStartTime = Date.now();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(tick, 1000);
+}
+
+function createTile(item) {
+  const tile = document.createElement('div');
+  tile.className = 'match-tile';
+  tile.textContent = item.text;
+  tile.dataset.idx = item.idx;
+  tile.dataset.side = item.side;
+  tile.onclick = () => selectTile(tile);
+  return tile;
+}
+
+// ============ TIMER ============
+function tick() {
+  timeLeft--;
+  const timerEl = document.getElementById('timer');
+  timerEl.textContent = timeLeft;
+  if (timeLeft <= 5) {
+    timerEl.className = 'timer danger';
+    playTimeWarn();
+  } else if (timeLeft <= 10) {
+    timerEl.className = 'timer warning';
+  }
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    endRound(false);
+  }
+}
+
+// ============ TILE SELECTION ============
+function selectTile(tile) {
+  if (tile.classList.contains('matched') || tile.classList.contains('correct')) return;
+
+  if (selectedTile === tile) {
+    tile.classList.remove('selected');
+    selectedTile = null;
+    return;
+  }
+
+  if (!selectedTile) {
+    tile.classList.add('selected');
+    selectedTile = tile;
+    return;
+  }
+
+  if (selectedTile.dataset.side === tile.dataset.side) {
+    selectedTile.classList.remove('selected');
+    tile.classList.add('selected');
+    selectedTile = tile;
+    return;
+  }
+
+  const idx1 = parseInt(selectedTile.dataset.idx);
+  const idx2 = parseInt(tile.dataset.idx);
+
+  if (idx1 === idx2) {
+    handleCorrectMatch(selectedTile, tile, idx1);
+  } else {
+    handleWrongMatch(selectedTile, tile, idx1, idx2);
+  }
+}
+
+function handleCorrectMatch(tile1, tile2, pairIdx) {
+  tile1.classList.remove('selected');
+  tile1.classList.add('correct');
+  tile2.classList.add('correct');
+
+  streak++;
+  if (streak > bestStreak) bestStreak = streak;
+
+  if (streak >= 3) playStreak();
+  else playCorrect();
+  matchedCount++;
+
+  let xp = 10;
+  const elapsed = (Date.now() - roundStartTime) / 1000;
+  if (elapsed < 3 * matchedCount) xp += 5;
+  if (streak > 2) xp += (streak - 2) * 2;
+  roundXP += xp;
+
+  const pair = roundPairs[pairIdx];
+  if (!masteredSet.some(m => m[0] === pair[0] && m[1] === pair[1])) {
+    masteredSet.push(pair);
+  }
+  wrongThisLevel = wrongThisLevel.filter(w => w[0] !== pair[0] || w[1] !== pair[1]);
+
+  showFloatingXP(tile2, '+' + xp + ' XP');
+  updateStreakDisplay();
+
+  const pf = document.getElementById('progressFill');
+  pf.style.width = (matchedCount / totalPairs * 100) + '%';
+  pf.classList.remove('pulse');
+  void pf.offsetWidth;
+  pf.classList.add('pulse');
+
+  const t1 = tile1, t2 = tile2;
+  setTimeout(() => {
+    t1.classList.remove('correct');
+    t1.classList.add('matched');
+    t2.classList.remove('correct');
+    t2.classList.add('matched');
+  }, 380);
+
+  selectedTile = null;
+
+  if (matchedCount === totalPairs) {
+    clearInterval(timerInterval);
+    roundXP += timeLeft * 2;
+    setTimeout(() => endRound(true), 450);
+  }
+}
+
+function handleWrongMatch(tile1, tile2, idx1, idx2) {
+  tile1.classList.remove('selected');
+  tile1.classList.add('wrong');
+  tile2.classList.add('wrong');
+  playWrong();
+
+  streak = 0;
+  updateStreakDisplay();
+
+  [idx1, idx2].forEach(idx => {
+    const pair = roundPairs[idx];
+    if (pair && !reviewQueue.some(r => r[0] === pair[0] && r[1] === pair[1])) {
+      reviewQueue.push(pair);
+    }
+    if (pair && !wrongThisLevel.some(w => w[0] === pair[0] && w[1] === pair[1])) {
+      wrongThisLevel.push(pair);
+    }
+  });
+
+  const t1 = tile1, t2 = tile2;
+  setTimeout(() => {
+    t1.classList.remove('wrong');
+    t2.classList.remove('wrong');
+  }, 500);
+
+  selectedTile = null;
+}
+
+// ============ FLOATING XP ============
+function showFloatingXP(tile, text) {
+  const rect = tile.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'xp-float';
+  el.textContent = text;
+  el.style.left = (rect.left + rect.width / 2 - 20) + 'px';
+  el.style.top = (rect.top - 5) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 750);
+}
+
+// ============ STREAK DISPLAY ============
+function updateStreakDisplay() {
+  const sd = document.getElementById('streakDisplay');
+  if (streak >= 3) {
+    sd.textContent = streak + ' streak!';
+    sd.classList.add('glowing');
+  } else if (streak >= 2) {
+    sd.textContent = streak + ' in a row';
+    sd.classList.remove('glowing');
+  } else {
+    sd.textContent = '';
+    sd.classList.remove('glowing');
+  }
+}
+
+// ============ END ROUND ============
+function endRound(completed) {
+  const elapsed = Math.round((Date.now() - roundStartTime) / 1000);
+  levelXP += roundXP;
+  levelMatchedTotal += matchedCount;
+  levelPairsTotal += totalPairs;
+  if (bestStreak > levelBestStreak) levelBestStreak = bestStreak;
+  currentRound++;
+
+  const wrongCount = roundPairs.filter(p => wrongThisLevel.some(w => w[0] === p[0] && w[1] === p[1])).length;
+  updateRoundStats(matchedCount, wrongCount, elapsed);
+
+  const isLastRound = currentRound >= ROUNDS_PER_LEVEL;
+
+  if (isLastRound) {
+    showLevelComplete();
+  } else {
+    showRoundComplete(elapsed);
+  }
+}
+
+function showRoundComplete(elapsed) {
+  showScreen('roundComplete');
+  playRoundWin();
+  document.getElementById('rcTitle').textContent = 'Round ' + currentRound + ' Complete!';
+  document.getElementById('rcXP').textContent = '+' + roundXP + ' XP';
+  document.getElementById('rcMatched').textContent = matchedCount;
+  document.getElementById('rcTotal').textContent = totalPairs;
+  document.getElementById('rcTime').textContent = elapsed;
+  document.getElementById('rcStreak').textContent = bestStreak;
+
+  const reviewNote = document.getElementById('rcReview');
+  if (reviewQueue.length > 0) {
+    reviewNote.textContent = reviewQueue.length + ' word' + (reviewQueue.length > 1 ? 's' : '') + ' queued for review';
+  } else {
+    reviewNote.textContent = 'All words matched perfectly!';
+  }
+
+  document.getElementById('btnContinue').textContent = 'CONTINUE';
+  document.getElementById('btnContinue').onclick = nextRound;
+}
+
+function showLevelComplete() {
+  const pct = levelPairsTotal > 0 ? levelMatchedTotal / levelPairsTotal : 0;
+  const stars = pct >= 0.9 ? 3 : pct >= 0.7 ? 2 : pct >= 0.5 ? 1 : 0;
+
+  saveLevelResult(currentLevel, stars, levelXP);
+  playLevelWin();
+
+  showScreen('levelComplete');
+  document.getElementById('lcXP').textContent = '+' + levelXP + ' XP';
+  document.getElementById('lcMastered').textContent = masteredSet.length;
+  document.getElementById('lcReview').textContent = wrongThisLevel.length;
+
+  const starsEl = document.getElementById('lcStars');
+  starsEl.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const span = document.createElement('span');
+    span.className = 'star';
+    span.innerHTML = '&#9733;';
+    span.style.color = i < stars ? '#FFC800' : '#e5e5e5';
+    starsEl.appendChild(span);
+    setTimeout(() => span.classList.add('reveal'), 300 + i * 300);
+  }
+
+  if (stars >= 2) {
+    setTimeout(launchConfetti, 200);
+  }
+}
+
+// ============ NEXT ROUND ============
+function nextRound() {
+  showCountdown(() => {
+    showScreen('gameArea');
+    startRound();
+  });
+}
+
+function confirmQuit() {
+  if (confirm('Quit this level? Progress for this session will be lost.')) {
+    clearInterval(timerInterval);
+    backToLevels();
+  }
+}
+
+function backToLevels() {
+  clearInterval(timerInterval);
+  renderLevels();
+}
+
+// ============ CONFETTI ============
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#58CC02','#1CB0F6','#FF9600','#FFC800','#FF4B4B','#CE82FF'];
+  const pieces = [];
+
+  for (let i = 0; i < 70; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 200,
+      w: 6 + Math.random() * 6,
+      h: 10 + Math.random() * 8,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vy: 2 + Math.random() * 3,
+      vx: (Math.random() - 0.5) * 2,
+      rot: Math.random() * 360,
+      vr: (Math.random() - 0.5) * 8,
+      opacity: 1
+    });
+  }
+
+  let frame = 0;
+  const maxFrames = 180;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    frame++;
+
+    if (frame > maxFrames * 0.6) {
+      pieces.forEach(p => p.opacity = Math.max(0, p.opacity - 0.02));
+    }
+
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.opacity <= 0) return;
+      alive = true;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05;
+      p.rot += p.vr;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (alive && frame < maxFrames) {
+      requestAnimationFrame(draw);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+// ============ UTILS ============
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ============ INIT ============
+(async function init() {
+  await loadProgressFromServer();
+  migrateOldProgress();
+  renderLevels();
+})();
+</script>
+</body>
+</html>
